@@ -1,0 +1,57 @@
+## Walkthrough
+
+1. Open the target and inspect the two panes: donations API and scratch origin.
+2. From the scratch pane, make a simple request without credentials and observe
+   that it does not prove access to the signed-in donor response.
+3. Try a wildcard origin with credentials and observe the simulated browser
+   reject it. This is faithful to real browser behavior: wildcard origins and
+   credentialed reads do not mix.
+4. Send the request in the shape the target API incorrectly allows: include the
+   scratch origin, allow credentials, and let the API reflect the origin back.
+5. The simulated browser accepts the credentialed response as readable by the
+   scratch pane.
+6. Read the private donor response and recover the flag.
+
+This target is a simulation, and the solution must be honest about that. The
+faithful parts are the request origin, preflight for non-simple requests, the
+credentialed request rule, and rejection of `*` with credentials. The simulated
+part is the browser and API living in one sandboxed document instead of across
+real origins. The lesson is still the same: reflecting arbitrary origins while
+allowing credentials lets another site read a user's private response.
+
+## The fix
+
+Use a strict allowlist of trusted origins, never reflect arbitrary origins, and
+only allow credentials when the origin is known. Treat CORS as a browser read
+policy, not as authentication.
+
+```js
+const allowedOrigins = new Set([
+  "https://partners.ninelives.example",
+  "https://donations.ninelives.example",
+]);
+
+function applyCors(request, response) {
+  const origin = request.headers.get("origin");
+  if (!origin || !allowedOrigins.has(origin)) {
+    return response;
+  }
+
+  response.headers.set("Access-Control-Allow-Origin", origin);
+  response.headers.set("Access-Control-Allow-Credentials", "true");
+  response.headers.set("Vary", "Origin");
+  return response;
+}
+```
+
+The production control is explicit origin allowlisting plus normal server-side
+authentication and authorization. CORS should never be used as the only
+protection for private data.
+
+## Recovered
+
+Recovered donations audit: "Three small recurring donations were created from
+the lobby terminal under the note `for whoever takes cage 13 home`. The payment
+source was prepaid and never touched adopter accounts." Wildcard's mistake
+exposed the trail. It did not reveal a thief. It revealed someone saving for an
+adoption fee.

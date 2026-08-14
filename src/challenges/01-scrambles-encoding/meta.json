@@ -1,0 +1,16 @@
+{
+  "slug": "01-scrambles-encoding",
+  "order": 1,
+  "act": 1,
+  "cat": "Scrambles",
+  "title": "Encoding mistaken for encryption",
+  "tagline": "Decode a browser-held session blob and prove it was never secret.",
+  "vulnClass": "Encoding mistaken for encryption",
+  "cwe": "CWE-922",
+  "difficulty": 1,
+  "tags": ["encoding", "client-state", "authorization"],
+  "flagHash": "ed5b49c41635a4667abf57678d4662ec1d392178252813315adc8266f0bd7d7c",
+  "frameHeight": 620,
+  "mobileOk": true,
+  "status": "ready"
+}

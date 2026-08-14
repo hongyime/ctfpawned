@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Knox: Client-side auth bypass</title>
+    <!-- ctfpawned-runtime -->
+    <style>
+      body {
+        background: #fffaf0;
+        color: #101010;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        margin: 0;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-block: 0;
+      }
+
+      .grid {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .split {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+      }
+
+      .panel {
+        background: #fdf6e3;
+        border: 3px solid #101010;
+        display: grid;
+        gap: 0.75rem;
+        padding: 0.85rem;
+      }
+
+      .controls {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      label {
+        display: grid;
+        font-weight: 800;
+        gap: 0.25rem;
+      }
+
+      input,
+      select,
+      textarea,
+      pre,
+      output {
+        background: #ffffff;
+        border: 2px solid #101010;
+        color: #101010;
+        padding: 0.5rem;
+      }
+
+      textarea {
+        min-height: 5.5rem;
+        resize: vertical;
+      }
+
+      pre {
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+
+      button {
+        background: #ffd400;
+        border: 2px solid #101010;
+        cursor: pointer;
+        font-weight: 900;
+        padding: 0.5rem 0.75rem;
+      }
+
+      button:hover {
+        transform: translate(-1px, -1px);
+      }
+
+      .flag {
+        background: #d9ffe2;
+        border: 3px solid #101010;
+        display: grid;
+        font-weight: 900;
+        gap: 0.4rem;
+        padding: 0.75rem;
+      }
+
+      .muted {
+        color: #4f4f4f;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <h1>Knox staff door</h1>
+        <p class="muted">
+          The form looks official because the target already shipped the rule.
+        </p>
+        <form id="login" class="grid">
+          <label>Username <input id="username" autocomplete="off" /></label>
+          <label
+            >Password <input id="password" type="password" autocomplete="off"
+          /></label>
+          <button type="submit">Unlock staff area</button>
+        </form>
+        <output id="status">locked</output>
+      </section>
+      <section class="flag" id="staff-area" hidden>
+        <span>Front desk staff area</span>
+        <code id="flag"></code>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const flag = "ctfpawned{knox_side_door_opened}";
+        const expectedUsername = "knox";
+        const expectedPassword = "side-door-13";
+        const staffArea = document.querySelector("#staff-area");
+        const status = document.querySelector("#status");
+
+        function revealStaffArea() {
+          staffArea.hidden = false;
+          document.querySelector("#flag").textContent = flag;
+          status.textContent = "staff area open";
+        }
+
+        window.openStaffDoor = revealStaffArea;
+        document.querySelector("#login").addEventListener("submit", (event) => {
+          event.preventDefault();
+          const username = document.querySelector("#username").value;
+          const password = document.querySelector("#password").value;
+          if (username === expectedUsername && password === expectedPassword) {
+            revealStaffArea();
+          } else {
+            status.textContent = "denied by browser-side check";
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

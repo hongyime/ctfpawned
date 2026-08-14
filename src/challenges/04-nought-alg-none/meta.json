@@ -1,0 +1,16 @@
+{
+  "slug": "04-nought-alg-none",
+  "order": 4,
+  "act": 1,
+  "cat": "Nought",
+  "title": "JWT alg none",
+  "tagline": "Let the token choose the verifier and print yourself an admin badge.",
+  "vulnClass": "JWT alg: none",
+  "cwe": "CWE-347",
+  "difficulty": 2,
+  "tags": ["jwt", "signature-bypass", "authorization"],
+  "flagHash": "7ff59f072cb13944824a5e73d331faecbc8002cd0ad580a20d9777183cf10f5f",
+  "frameHeight": 620,
+  "mobileOk": true,
+  "status": "ready"
+}

@@ -1,0 +1,52 @@
+## Walkthrough
+
+1. Load your assigned volunteer record, 1042, through the target's viewer.
+2. Watch the request path shown by the widget. The only changing part is the
+   record number.
+3. Ask for nearby or interesting record numbers instead of your assigned one.
+4. Request record 1337.
+5. The target returns a protected adoption record that your volunteer account
+   should not be allowed to read.
+6. Read the flag from the protected record.
+
+The target was vulnerable because it authenticated the user but did not
+authorize access to each object. The interface only linked to record 1042, but
+the data endpoint trusted any record ID supplied by the browser. A user who can
+change an identifier can ask for someone else's object unless the server checks
+ownership or permission every time.
+
+## The fix
+
+Authorize the specific object being requested. Do not rely on hidden links,
+sequential IDs, or client routing to enforce access control.
+
+```js
+async function getAdoptionRecord(request, recordId) {
+  const session = await requireSession(request);
+  const record = await adoptionRecords.findById(recordId);
+
+  if (!record) {
+    return new Response("Not found", { status: 404 });
+  }
+
+  const canRead =
+    record.ownerUserId === session.userId ||
+    session.roles.includes("adoption_staff");
+
+  if (!canRead) {
+    return new Response("Forbidden", { status: 403 });
+  }
+
+  return Response.json(record);
+}
+```
+
+The production control is object-level authorization on the server. Every
+record read needs a permission check tied to the authenticated user.
+
+## Recovered
+
+Recovered record 1337: "Last modified 03:14 by cage13-maint. Priority moved
+from waiting to urgent. Change reason: public terminal correction." Digit's
+numbers finally point somewhere human. Someone has been using maintenance access
+to move a record through the adoption queue.

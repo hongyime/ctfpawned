@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pedigree: Prototype pollution</title>
+    <!-- ctfpawned-runtime -->
+    <style>
+      body {
+        background: #fffaf0;
+        color: #101010;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        margin: 0;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-block: 0;
+      }
+
+      .grid {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .split {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+      }
+
+      .panel {
+        background: #fdf6e3;
+        border: 3px solid #101010;
+        display: grid;
+        gap: 0.75rem;
+        padding: 0.85rem;
+      }
+
+      .controls {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      label {
+        display: grid;
+        font-weight: 800;
+        gap: 0.25rem;
+      }
+
+      input,
+      select,
+      textarea,
+      pre,
+      output {
+        background: #ffffff;
+        border: 2px solid #101010;
+        color: #101010;
+        padding: 0.5rem;
+      }
+
+      textarea {
+        min-height: 5.5rem;
+        resize: vertical;
+      }
+
+      pre {
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+
+      button {
+        background: #ffd400;
+        border: 2px solid #101010;
+        cursor: pointer;
+        font-weight: 900;
+        padding: 0.5rem 0.75rem;
+      }
+
+      button:hover {
+        transform: translate(-1px, -1px);
+      }
+
+      .flag {
+        background: #d9ffe2;
+        border: 3px solid #101010;
+        display: grid;
+        font-weight: 900;
+        gap: 0.4rem;
+        padding: 0.75rem;
+      }
+
+      .muted {
+        color: #4f4f4f;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <h1>Pedigree importer</h1>
+        <p class="muted">
+          The importer recursively copies uploaded JSON into a normal object.
+        </p>
+        <label>
+          Import JSON
+          <textarea id="import-json">
+{ "name": "Smudge", "status": "unverified" }</textarea>
+        </label>
+        <div class="controls">
+          <button id="import" type="button">Import update</button>
+          <button id="review" type="button">Run later review</button>
+        </div>
+        <pre id="record"></pre>
+        <output id="status">ready</output>
+      </section>
+      <section class="flag" id="verified-panel" hidden>
+        <span>Verified pedigree panel</span>
+        <code id="flag"></code>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const flag = "ctfpawned{pedigree_verified_smudge}";
+        delete Object.prototype.verified;
+        const record = { name: "Smudge", status: "unverified" };
+
+        function merge(target, source) {
+          for (const [key, value] of Object.entries(source)) {
+            if (value && typeof value === "object" && !Array.isArray(value)) {
+              if (!target[key]) target[key] = {};
+              merge(target[key], value);
+            } else {
+              target[key] = value;
+            }
+          }
+          return target;
+        }
+
+        function renderRecord() {
+          document.querySelector("#record").textContent = JSON.stringify(
+            record,
+            null,
+            2,
+          );
+        }
+
+        function importRecord() {
+          try {
+            merge(
+              record,
+              JSON.parse(document.querySelector("#import-json").value),
+            );
+            document.querySelector("#status").textContent = "import merged";
+            renderRecord();
+          } catch (error) {
+            document.querySelector("#status").textContent = String(error);
+          }
+        }
+
+        function reviewRecord() {
+          const laterRecord = { name: "Smudge", status: "pending-review" };
+          if (laterRecord.verified) {
+            document.querySelector("#verified-panel").hidden = false;
+            document.querySelector("#flag").textContent = flag;
+            document.querySelector("#status").textContent =
+              "later record appears verified";
+          } else {
+            document.querySelector("#status").textContent =
+              "later record is still unverified";
+          }
+        }
+
+        document
+          .querySelector("#import")
+          .addEventListener("click", importRecord);
+        document
+          .querySelector("#review")
+          .addEventListener("click", reviewRecord);
+        renderRecord();
+      })();
+    </script>
+  </body>
+</html>

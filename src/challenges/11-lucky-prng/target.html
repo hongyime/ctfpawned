@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lucky: Weak PRNG token prediction</title>
+    <!-- ctfpawned-runtime -->
+    <style>
+      body {
+        background: #fffaf0;
+        color: #101010;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        margin: 0;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-block: 0;
+      }
+
+      .grid {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .split {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+      }
+
+      .panel {
+        background: #fdf6e3;
+        border: 3px solid #101010;
+        display: grid;
+        gap: 0.75rem;
+        padding: 0.85rem;
+      }
+
+      .controls {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      label {
+        display: grid;
+        font-weight: 800;
+        gap: 0.25rem;
+      }
+
+      input,
+      select,
+      textarea,
+      pre,
+      output {
+        background: #ffffff;
+        border: 2px solid #101010;
+        color: #101010;
+        padding: 0.5rem;
+      }
+
+      textarea {
+        min-height: 5.5rem;
+        resize: vertical;
+      }
+
+      pre {
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+
+      button {
+        background: #ffd400;
+        border: 2px solid #101010;
+        cursor: pointer;
+        font-weight: 900;
+        padding: 0.5rem 0.75rem;
+      }
+
+      button:hover {
+        transform: translate(-1px, -1px);
+      }
+
+      .flag {
+        background: #d9ffe2;
+        border: 3px solid #101010;
+        display: grid;
+        font-weight: 900;
+        gap: 0.4rem;
+        padding: 0.75rem;
+      }
+
+      .muted {
+        color: #4f4f4f;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <h1>Lucky session refresher</h1>
+        <p class="muted">
+          The developer note gives the toy generator constants and a small seed
+          window.
+        </p>
+        <pre id="note"></pre>
+      </section>
+      <section class="panel">
+        <h2>Recent tokens</h2>
+        <ol id="tokens"></ol>
+        <label
+          >Predicted next token <input id="prediction" autocomplete="off"
+        /></label>
+        <button id="submit" type="button">Submit prediction</button>
+        <output id="status">waiting for prediction</output>
+      </section>
+      <section class="flag" id="flag-panel" hidden>
+        <span>Next token predicted</span>
+        <code id="flag"></code>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const flag = "ctfpawned{lucky_next_token}";
+        const modulus = 2147483647;
+        const multiplier = 48271;
+        const seed = 734201;
+        const minSeed = seed - 5;
+        const maxSeed = seed + 5;
+
+        function nextState(state) {
+          return (state * multiplier) % modulus;
+        }
+
+        function tokenFromState(state) {
+          return "nl-" + state.toString(36).padStart(7, "0").slice(-7);
+        }
+
+        const states = [];
+        let state = seed;
+        for (let index = 0; index < 4; index += 1) {
+          state = nextState(state);
+          states.push(state);
+        }
+        const observed = states.slice(0, 3).map(tokenFromState);
+        const expectedNext = tokenFromState(states[3]);
+
+        document.querySelector("#note").textContent = JSON.stringify(
+          {
+            modulus,
+            multiplier,
+            seedSearchRange: [minSeed, maxSeed],
+            recipe:
+              "state = state * multiplier mod modulus; token = base36(state)",
+          },
+          null,
+          2,
+        );
+        document.querySelector("#note").dataset.modulus = String(modulus);
+        document.querySelector("#note").dataset.multiplier = String(multiplier);
+        document.querySelector("#note").dataset.minSeed = String(minSeed);
+        document.querySelector("#note").dataset.maxSeed = String(maxSeed);
+        for (const token of observed) {
+          const item = document.createElement("li");
+          item.textContent = token;
+          document.querySelector("#tokens").append(item);
+        }
+
+        function submitPrediction() {
+          const value = document.querySelector("#prediction").value.trim();
+          if (value === expectedNext) {
+            document.querySelector("#status").textContent =
+              "prediction accepted";
+            document.querySelector("#flag").textContent = flag;
+            document.querySelector("#flag-panel").hidden = false;
+          } else {
+            document.querySelector("#status").textContent =
+              "prediction rejected";
+          }
+        }
+
+        document
+          .querySelector("#submit")
+          .addEventListener("click", submitPrediction);
+      })();
+    </script>
+  </body>
+</html>

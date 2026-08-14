@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="About ctfpawned"
+  description="Ethics and scope for ctfpawned."
+>
+  <section class="page">
+    <div class="hero">
+      <h1>About</h1>
+      <p>
+        ctfpawned is a teaching tool. Every vulnerable target runs inside this
+        site, and every solution must explain the production fix.
+      </p>
+    </div>
+    <p>
+      The project deliberately avoids accounts, tracking, live third-party
+      targets, and backend flag validation so it stays linkable and safe to run.
+    </p>
+    <article class="content-panel">
+      <h2>Scope</h2>
+      <p>
+        The targets are toy applications made for this site. Use the techniques
+        here only on systems you own or have written permission to test.
+      </p>
+      <p>
+        Flags are checked locally in the browser. ctfpawned is built for
+        learning and discussion, not for competitive scoring or secrecy.
+      </p>
+    </article>
+  </section>
+</BaseLayout>

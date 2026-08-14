@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sesame: JWT claim tampering with a weak secret</title>
+    <!-- ctfpawned-runtime -->
+    <style>
+      body {
+        background: #fffaf0;
+        color: #101010;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        margin: 0;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-block: 0;
+      }
+
+      .grid {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .split {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+      }
+
+      .panel {
+        background: #fdf6e3;
+        border: 3px solid #101010;
+        display: grid;
+        gap: 0.75rem;
+        padding: 0.85rem;
+      }
+
+      .controls {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      label {
+        display: grid;
+        font-weight: 800;
+        gap: 0.25rem;
+      }
+
+      input,
+      select,
+      textarea,
+      pre,
+      output {
+        background: #ffffff;
+        border: 2px solid #101010;
+        color: #101010;
+        padding: 0.5rem;
+      }
+
+      textarea {
+        min-height: 5.5rem;
+        resize: vertical;
+      }
+
+      pre {
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+
+      button {
+        background: #ffd400;
+        border: 2px solid #101010;
+        cursor: pointer;
+        font-weight: 900;
+        padding: 0.5rem 0.75rem;
+      }
+
+      button:hover {
+        transform: translate(-1px, -1px);
+      }
+
+      .flag {
+        background: #d9ffe2;
+        border: 3px solid #101010;
+        display: grid;
+        font-weight: 900;
+        gap: 0.4rem;
+        padding: 0.75rem;
+      }
+
+      .muted {
+        color: #4f4f4f;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <h1>Sesame staff-token preview</h1>
+        <p class="muted">
+          Changing the payload breaks the signature unless you can reproduce the
+          signing phrase.
+        </p>
+        <label>
+          Staff token
+          <textarea id="token"></textarea>
+        </label>
+        <details open>
+          <summary>Troubleshooting phrase drawer</summary>
+          <pre id="phrases"></pre>
+        </details>
+        <div class="controls">
+          <button id="submit" type="button">Verify token</button>
+        </div>
+        <pre id="decoded"></pre>
+        <output id="status">minting starter token</output>
+      </section>
+      <section class="flag" id="staff-notes" hidden>
+        <span>Staff intake notes unlocked</span>
+        <code id="flag"></code>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const flag = "ctfpawned{sesame_weekend_phrase}";
+        const phrases = [
+          "catnap",
+          "front-desk",
+          "weekend-test",
+          "nine-lives",
+          "open-sesame",
+          "treats",
+          "smudge",
+          "cage13",
+          "donations",
+          "yellow-badge",
+          "printer",
+          "volunteer",
+          "biscuit",
+          "knox-locks",
+          "lucky-number",
+          "dotty-docs",
+          "pedigree",
+          "wildcard",
+          "echo",
+          "scrambles",
+        ];
+        const tokenInput = document.querySelector("#token");
+        const decoded = document.querySelector("#decoded");
+        const status = document.querySelector("#status");
+        const staffNotes = document.querySelector("#staff-notes");
+
+        function base64urlText(text) {
+          return btoa(text)
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/g, "");
+        }
+
+        function base64urlJson(value) {
+          return base64urlText(JSON.stringify(value));
+        }
+
+        function decodePart(part) {
+          const padded =
+            part.replace(/-/g, "+").replace(/_/g, "/") +
+            "===".slice((part.length + 3) % 4);
+          return JSON.parse(atob(padded));
+        }
+
+        async function signToken(payload, secret) {
+          const header = base64urlJson({ typ: "JWT", alg: "HS256" });
+          const body = base64urlJson(payload);
+          const signed = header + "." + body;
+          const signature = await window.__ctfpawned_hmacSha256(signed, secret);
+          return signed + "." + signature;
+        }
+
+        async function verifyToken(token) {
+          const parts = token.split(".");
+          if (parts.length !== 3) throw new Error("Malformed token");
+          const header = decodePart(parts[0]);
+          const payload = decodePart(parts[1]);
+          if (header.alg !== "HS256") throw new Error("Unexpected algorithm");
+          for (const phrase of phrases) {
+            const expected = await window.__ctfpawned_hmacSha256(
+              parts[0] + "." + parts[1],
+              phrase,
+            );
+            if (expected === parts[2]) return { header, payload, phrase };
+          }
+          throw new Error("Signature did not match a support phrase");
+        }
+
+        async function renderToken() {
+          staffNotes.hidden = true;
+          try {
+            const verified = await verifyToken(tokenInput.value.trim());
+            decoded.textContent = JSON.stringify(verified, null, 2);
+            if (verified.payload.role === "staff") {
+              staffNotes.hidden = false;
+              document.querySelector("#flag").textContent = flag;
+              status.textContent = "staff token accepted";
+            } else {
+              status.textContent =
+                "volunteer token accepted with phrase " + verified.phrase;
+            }
+          } catch (error) {
+            decoded.textContent = String(error);
+            status.textContent = "token rejected";
+          }
+        }
+
+        window.sesame = { phrases, signToken, verifyToken };
+        document.querySelector("#phrases").textContent = phrases.join("\n");
+        document
+          .querySelector("#submit")
+          .addEventListener("click", renderToken);
+        signToken(
+          { sub: "audit-volunteer", role: "volunteer", iss: "nine-lives" },
+          "open-sesame",
+        ).then((token) => {
+          tokenInput.value = token;
+          renderToken();
+        });
+      })();
+    </script>
+  </body>
+</html>

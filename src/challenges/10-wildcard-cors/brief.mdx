@@ -1,0 +1,20 @@
+## Scenario
+
+Wildcard owns the donations API and wants partners to integrate with Nine Lives
+without asking him for configuration. Local cafes, shelter fundraisers, and
+campaign microsites all need receipts, so he made the API friendly to whatever
+site calls it. He is very proud of the low support burden.
+
+The target is split into two panes. One pane represents the donations API. The
+other represents a scratch page on a different origin. The API has a pretend
+signed-in donor session and an endpoint that returns account details. The
+scratch page should not be able to read those details, even if the donor's
+browser is already signed in.
+
+This challenge is a faithful browser-behavior simulation, not a real networked
+API. It models preflight requests, request origins, credentialed requests, and
+the browser rule that rejects wildcard origins with credentials.
+
+Win condition: from the scratch page pane, make a credentialed request that the
+simulated browser allows you to read, then recover the flag in the private API
+response.

@@ -1,0 +1,62 @@
+## Walkthrough
+
+1. Open the login target and try any ordinary username and password. The page
+   rejects the attempt without leaving the sandbox.
+2. Open the browser devtools and inspect the target source.
+3. Find the login check in the inline script. The correct comparison values are
+   present in the code sent to the browser.
+4. Use one of the available routes:
+   - enter the recovered username and password,
+   - call the exposed gate function from the console,
+   - or set the client-side staff state before the page renders the panel.
+5. The staff area opens and displays the flag.
+
+There are multiple routes because the real flaw is not one leaked password. The
+flaw is asking browser code to decide whether the user is allowed into a
+trusted area. The user controls the browser, can read the browser's code, and
+can modify browser state.
+
+## The fix
+
+Move authentication and authorization decisions to a trusted server boundary.
+Client-side checks can improve the interface, but they must only mirror a
+server decision that has already happened.
+
+```js
+// Browser code sends credentials; it does not decide the result.
+async function submitLogin(username, password) {
+  const response = await fetch("/api/login", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Invalid credentials");
+  }
+
+  return response.json();
+}
+
+// Server code owns the check.
+async function loginHandler(request) {
+  const { username, password } = await request.json();
+  const user = await users.findByUsername(username);
+
+  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    return new Response("Invalid credentials", { status: 401 });
+  }
+
+  return createSessionResponse(user.id);
+}
+```
+
+The production control is trusted server-side authentication plus a session
+cookie that the browser cannot forge into staff status.
+
+## Recovered
+
+Recovered front-desk checklist: "Knox confirmed the staff door locks if the
+visitor uses the form normally. Did not test what happens if the visitor opens
+the panel from the side." The audit log is still mundane, but the pattern is
+clear: Nine Lives keeps confusing user interface flow with enforcement.

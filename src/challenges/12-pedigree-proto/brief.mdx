@@ -1,0 +1,19 @@
+## Scenario
+
+Pedigree wrote the adoption-record importer so partner shelters can send
+updates to Nine Lives. She cares about lineage, certified records, and making
+sure every cat's history is preserved. The importer takes uploaded JSON and
+folds it into a default record before the review page decides whether a record
+is verified.
+
+The target shows a normal unverified record first. The verified pedigree panel
+is present but hidden until a later check believes the imported record is
+trusted. Pedigree says the importer is safe because it only copies fields into a
+plain object and because the uploaded JSON never directly names the panel.
+
+Your job is to review whether the merge changes only the one record being
+imported, or whether a crafted object can affect how unrelated records behave
+afterward. The entire importer is a toy demonstration running in the sandbox.
+
+Win condition: import JSON that makes the verified pedigree panel appear and
+recover the flag that closes the audit.

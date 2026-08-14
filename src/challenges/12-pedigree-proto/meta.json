@@ -1,0 +1,16 @@
+{
+  "slug": "12-pedigree-proto",
+  "order": 12,
+  "act": 3,
+  "cat": "Pedigree",
+  "title": "Prototype pollution",
+  "tagline": "Pollute a later review object through a recursive JSON merge.",
+  "vulnClass": "Prototype pollution",
+  "cwe": "CWE-1321",
+  "difficulty": 4,
+  "tags": ["prototype-pollution", "merge", "json"],
+  "flagHash": "0153866997b829d916f626bad65f00ca5eb3603c059d674818c8fc119c8a1243",
+  "frameHeight": 700,
+  "mobileOk": true,
+  "status": "ready"
+}

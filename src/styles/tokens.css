@@ -1,0 +1,348 @@
+@import "tailwindcss";
+
+:root {
+  --border-w: 3px;
+  --shadow-hard: 6px 6px 0 var(--ink);
+  --radius: 0;
+  --ink: #101010;
+  --paper: #f3f7ed;
+  --surface: #fffdf4;
+  --accent: #ffd400;
+  --danger: #ff4b3e;
+  --info: #3e8bff;
+  --act-1: #7bd389;
+  --act-2: #ffa552;
+  --act-3: #b892ff;
+}
+
+html {
+  background: var(--paper);
+  color: var(--ink);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 4px solid var(--info);
+  outline-offset: 3px;
+}
+
+.shell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+
+.site-header,
+.site-footer {
+  border-color: var(--ink);
+  border-style: solid;
+  padding: 1rem clamp(1rem, 4vw, 3rem);
+}
+
+.site-header {
+  border-width: 0 0 var(--border-w);
+}
+
+.site-footer {
+  border-width: var(--border-w) 0 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.site-nav {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.brand {
+  color: inherit;
+  font-size: 1.25rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.875rem;
+}
+
+.nav-links a {
+  color: inherit;
+  font-weight: 800;
+}
+
+.page {
+  margin-inline: auto;
+  max-width: 1120px;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  width: 100%;
+}
+
+.hero {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  letter-spacing: 0;
+  line-height: 0.92;
+  margin: 0;
+}
+
+.hero p {
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 760px;
+}
+
+.challenge-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.challenge-card {
+  --card-accent: var(--accent);
+  background:
+    linear-gradient(var(--card-accent) 0 0.55rem, transparent 0.55rem),
+    var(--surface);
+  border: var(--border-w) solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  color: inherit;
+  display: grid;
+  gap: 0.75rem;
+  min-height: 15rem;
+  padding: 1.6rem 1rem 1rem;
+  text-decoration: none;
+}
+
+.challenge-card-act-1 {
+  --card-accent: var(--act-1);
+}
+
+.challenge-card-act-2 {
+  --card-accent: var(--act-2);
+}
+
+.challenge-card-act-3 {
+  --card-accent: var(--act-3);
+}
+
+.challenge-card:focus-visible,
+.challenge-card:hover {
+  transform: translate(-2px, -2px);
+}
+
+.challenge-card h2,
+.empty-state h2 {
+  font-size: 1.35rem;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.challenge-card p,
+.empty-state p {
+  margin: 0;
+}
+
+.challenge-meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 0.2rem 0.45rem;
+}
+
+.tag:first-child {
+  background: var(--card-accent);
+}
+
+.empty-state {
+  border: var(--border-w) dashed var(--ink);
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.target-shell {
+  border: var(--border-w) solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  display: grid;
+  width: 100%;
+}
+
+.target-toolbar {
+  align-items: center;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--danger) 0 0.9rem,
+    var(--paper) 0.9rem 1.8rem
+  );
+  border-bottom: var(--border-w) solid var(--ink);
+  display: flex;
+  justify-content: space-between;
+  min-height: 3.25rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.target-label {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  font-size: 0.875rem;
+  font-weight: 900;
+  padding: 0.3rem 0.5rem;
+}
+
+.reset-button {
+  align-items: center;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding-inline: 0.65rem;
+}
+
+.reset-button:hover {
+  background: var(--accent);
+}
+
+.target-shell iframe {
+  background: white;
+  border: 0;
+  display: block;
+  min-height: 12.5rem;
+  width: 100%;
+}
+
+.flag-check,
+.content-panel {
+  background: var(--surface);
+  border: var(--border-w) solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  margin-top: 1.25rem;
+  padding: 1rem;
+}
+
+.flag-check {
+  align-items: end;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.flag-check label {
+  display: grid;
+  font-weight: 900;
+  gap: 0.35rem;
+}
+
+.flag-check input {
+  border: 2px solid var(--ink);
+  font: inherit;
+  min-width: 0;
+  padding: 0.55rem;
+}
+
+.flag-check button {
+  background: var(--accent);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  padding: 0.55rem 0.75rem;
+}
+
+.flag-result {
+  align-items: center;
+  display: inline-flex;
+  font-weight: 900;
+  gap: 0.35rem;
+  min-height: 2.5rem;
+}
+
+.flag-result-valid {
+  color: #136d2d;
+}
+
+.flag-result-invalid {
+  color: #b42318;
+}
+
+.content-panel {
+  line-height: 1.65;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.content-panel h2,
+.content-panel h3 {
+  line-height: 1.15;
+  margin-block: 1.25rem 0.5rem;
+}
+
+.content-panel h2:first-child,
+.content-panel h3:first-child {
+  margin-top: 0;
+}
+
+.content-panel pre {
+  background: var(--ink);
+  box-sizing: border-box;
+  color: var(--surface);
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+.content-panel code {
+  font-size: 0.95em;
+}
+
+.content-panel :not(pre) > code {
+  word-break: break-word;
+}
+
+@media (max-width: 720px) {
+  .flag-check {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .content-panel pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}

@@ -1,0 +1,18 @@
+## Scenario
+
+Lucky maintains the session refresher. He likes routines, lucky numbers, and
+the comfort of systems that behave the same way every time. The refresher shows
+recent token issue times to help staff debug sign-in problems, and it can mint a
+new session token when the current one expires.
+
+The target shows three recent tokens and the timestamp range around when they
+were issued. Lucky says this is harmless because the next token has not been
+created yet. The page also mentions the exact token recipe in a developer note,
+because Lucky believes transparency makes luck stronger.
+
+Your audit is to decide whether the next token is actually unknowable or merely
+not displayed yet. The tokens are toy values inside the sandbox. You are not
+reversing a real browser engine or attacking a live session service.
+
+Win condition: predict the next session token that the target will accept and
+recover the flag derived from that prediction.

@@ -1,0 +1,61 @@
+## Walkthrough
+
+1. Copy the volunteer token from the target and decode the header and payload.
+2. Confirm that changing the payload directly breaks the signature. This target
+   does not accept the shortcut from Nought.
+3. Open the troubleshooting drawer and collect the candidate signing phrases.
+4. Use the in-target helper to test each phrase against the original token until
+   one reproduces the existing signature.
+5. Modify the payload so the role claim has the privilege needed by the target.
+6. Re-sign the modified header and payload with the recovered phrase.
+7. Submit the new token. The staff notes panel opens and the flag is derived
+   from the correctly signed forged token.
+
+The target was vulnerable because the signature key was weak enough to guess.
+Cryptographic verification only proves that someone with the key signed the
+message. If the key is short, predictable, reused, or documented in a support
+list, an attacker can become "someone with the key."
+
+## The fix
+
+Use high-entropy signing keys stored outside source code and support material.
+Rotate keys through a controlled secret manager. Reject tokens signed with old
+or unknown key IDs after the rotation window closes.
+
+```js
+import { jwtVerify } from "jose";
+
+const allowedAlgorithms = ["HS256"];
+const secret = new TextEncoder().encode(process.env.STAFF_TOKEN_SECRET);
+
+export async function verifyStaffToken(token) {
+  if (
+    !process.env.STAFF_TOKEN_SECRET ||
+    process.env.STAFF_TOKEN_SECRET.length < 32
+  ) {
+    throw new Error("Signing secret is not configured safely");
+  }
+
+  const { payload, protectedHeader } = await jwtVerify(token, secret, {
+    algorithms: allowedAlgorithms,
+    issuer: "nine-lives",
+    audience: "staff-tools",
+  });
+
+  if (protectedHeader.alg !== "HS256") {
+    throw new Error("Unexpected algorithm");
+  }
+
+  return payload;
+}
+```
+
+The production control is strong secret management plus explicit verifier
+configuration. A correct signature from a guessed key is not security.
+
+## Recovered
+
+Recovered token-service note: "Sesame rotated the weekend test phrase to
+`open-sesame` because nobody could remember the previous one. Staff account
+`cage13-maint` requested notes at 03:14." This is the first entry that does not
+fit the routine audit. Cage 13 is not a staff desk.

@@ -1,0 +1,19 @@
+## Scenario
+
+Biscuit runs the treat-ordering kiosk, which is the most politically sensitive
+system at Nine Lives. Staff can order the good treats. Volunteers can order the
+training treats. Visitors can browse, but not submit anything, after last year's
+catnip incident.
+
+The kiosk remembers who gets the staff menu by reading a small bit of browser
+state. Biscuit likes this arrangement because it feels simple: the browser
+brings a label, the page reads the label, and the right menu appears. She has
+not explained why the browser should be trusted to label itself.
+
+Your audit account starts on the volunteer menu. The staff order panel is in
+the same target, but it does not render until the page believes the visitor is
+staff. Since the target runs in a sandboxed frame, its browser state is shimmed
+for the exercise and will not appear in the usual Application panel.
+
+Win condition: make the staff treat-ordering panel appear inside the target and
+recover the flag generated from the state that unlocked it.
