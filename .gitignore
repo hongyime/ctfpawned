@@ -1,8 +1,14 @@
 
+
 # AI / editor dot directories (managed via sourcerepo)
 .*
 !.github/
 !.agents/
+.agents/*
+!.agents/STATE.md
+!.agents/JOURNAL.md
+!.agents/handoffs/
+!.agents/handoffs/**
 !.gitignore
 !.gitattributes
 !.gitmodules
@@ -28,3 +34,4 @@
 skills/
 skills-lock.json
 docs/
+# End AI / editor dot directories (managed via sourcerepo)
