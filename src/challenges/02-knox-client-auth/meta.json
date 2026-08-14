@@ -1,0 +1,16 @@
+{
+  "slug": "02-knox-client-auth",
+  "order": 2,
+  "act": 1,
+  "cat": "Knox",
+  "title": "Client-side auth bypass",
+  "tagline": "Read the login rule the browser already has and open the staff area.",
+  "vulnClass": "Client-side auth bypass",
+  "cwe": "CWE-602",
+  "difficulty": 1,
+  "tags": ["client-auth", "browser-state", "source-review"],
+  "flagHash": "ce4b9a82b2a4639db6e4e39882e7a6067b36273f10055a8e599c680944a6465f",
+  "frameHeight": 560,
+  "mobileOk": true,
+  "status": "ready"
+}

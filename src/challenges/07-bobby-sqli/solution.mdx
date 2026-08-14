@@ -1,0 +1,47 @@
+## Walkthrough
+
+1. Search for a normal cat name and read the query displayed under the input.
+2. Notice that the search term appears directly inside quotes in the query.
+3. Submit a value that changes the meaning of the condition, such as a toy input
+   that makes the `WHERE` clause true for every row.
+4. Confirm that the target returns more rows than a normal search should.
+5. Use the query shape shown by the target to add a second result source with
+   matching columns from the private notes table.
+6. Read the staff note that contains the flag.
+
+The target was vulnerable because it built a database query by concatenating
+untrusted text into SQL. The database interpreted the user's input as part of
+the query language instead of as a value to search for.
+
+## The fix
+
+Use parameterized queries. The SQL text should be fixed, and user input should
+be bound as data by the database driver.
+
+```js
+async function searchCats(db, input) {
+  const pattern = `%${input}%`;
+
+  return db.all(
+    `
+      SELECT name, breed
+      FROM cats
+      WHERE name LIKE ?
+      ORDER BY name
+      LIMIT 25
+    `,
+    [pattern],
+  );
+}
+```
+
+The production control is query parameterization. Validation can improve the
+user experience, but it is not a substitute for separating code from data at
+the database boundary.
+
+## Recovered
+
+Recovered staff note: "Bobby says the search box is not connected to adoption
+priority. Separate note: record 1337 appeared in the urgent queue after a
+failed search for `smudge`." The anomaly now has a name, but not yet a motive.
+The system was edited by someone who knew where to look.

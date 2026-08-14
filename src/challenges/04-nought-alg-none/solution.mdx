@@ -1,0 +1,56 @@
+## Walkthrough
+
+1. Copy the volunteer badge token from the target.
+2. Split it on periods into header, payload, and signature.
+3. Decode the header and payload with base64url decoding. The payload contains
+   the volunteer role that keeps the admin drawer closed.
+4. Create a new header declaring the token has no signature.
+5. Create a new payload with the admin role required by the target.
+6. Base64url-encode the new header and payload, join them with periods, and
+   leave the signature part empty.
+7. Submit the forged token. The target accepts it as admin and derives the flag
+   from the submitted token.
+
+The verifier was vulnerable because it let attacker-controlled token metadata
+choose the verification rule. A verifier must know what algorithm it expects
+before it reads the token. If the token can say "no signature needed", the
+signature stops being a security control.
+
+## The fix
+
+Pin the expected algorithm in verifier configuration and require a valid
+signature for every token. Reject unsigned tokens for authenticated routes.
+
+```js
+const expectedAlgorithm = "HS256";
+
+function verifyBadgeToken(token, secret) {
+  const [encodedHeader, encodedPayload, encodedSignature] = token.split(".");
+  if (!encodedHeader || !encodedPayload || !encodedSignature) {
+    throw new Error("Malformed token");
+  }
+
+  const header = JSON.parse(base64urlDecode(encodedHeader));
+  if (header.alg !== expectedAlgorithm) {
+    throw new Error("Unexpected token algorithm");
+  }
+
+  const signed = `${encodedHeader}.${encodedPayload}`;
+  const expectedSignature = hmacSha256Base64url(signed, secret);
+  if (!timingSafeEqual(encodedSignature, expectedSignature)) {
+    throw new Error("Bad signature");
+  }
+
+  return JSON.parse(base64urlDecode(encodedPayload));
+}
+```
+
+The production control is strict verifier configuration: the server decides the
+allowed algorithm, and every authenticated token must be signed and verified.
+
+## Recovered
+
+Recovered badge-printer log: "No admin badges issued after 18:00. One volunteer
+badge preview rendered the admin template during testing, then disappeared from
+the print queue." The first act closes with an uncomfortable truth: the front
+door was never the real boundary.

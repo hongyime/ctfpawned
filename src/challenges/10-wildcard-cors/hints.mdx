@@ -1,0 +1,14 @@
+## Hint
+
+The scratch pane should be a different origin. The API should not let that pane
+read a signed-in user's private response.
+
+## Hint
+
+Credentials change the rule. A wildcard origin is rejected with credentials, but
+reflecting a specific untrusted origin can still be dangerous.
+
+## Hint
+
+Make the API echo the scratch pane's origin while allowing credentials, then
+read the private `/api/me` response from the scratch pane.

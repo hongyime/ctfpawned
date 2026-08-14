@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Digit: Broken object-level authorization</title>
+    <!-- ctfpawned-runtime -->
+    <style>
+      body {
+        background: #fffaf0;
+        color: #101010;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        margin: 0;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-block: 0;
+      }
+
+      .grid {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .split {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+      }
+
+      .panel {
+        background: #fdf6e3;
+        border: 3px solid #101010;
+        display: grid;
+        gap: 0.75rem;
+        padding: 0.85rem;
+      }
+
+      .controls {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      label {
+        display: grid;
+        font-weight: 800;
+        gap: 0.25rem;
+      }
+
+      input,
+      select,
+      textarea,
+      pre,
+      output {
+        background: #ffffff;
+        border: 2px solid #101010;
+        color: #101010;
+        padding: 0.5rem;
+      }
+
+      textarea {
+        min-height: 5.5rem;
+        resize: vertical;
+      }
+
+      pre {
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+
+      button {
+        background: #ffd400;
+        border: 2px solid #101010;
+        cursor: pointer;
+        font-weight: 900;
+        padding: 0.5rem 0.75rem;
+      }
+
+      button:hover {
+        transform: translate(-1px, -1px);
+      }
+
+      .flag {
+        background: #d9ffe2;
+        border: 3px solid #101010;
+        display: grid;
+        font-weight: 900;
+        gap: 0.4rem;
+        padding: 0.75rem;
+      }
+
+      .muted {
+        color: #4f4f4f;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <h1>Digit adoption record viewer</h1>
+        <p class="muted">
+          Your account is linked to record 1042, but the lookup widget accepts
+          any number.
+        </p>
+        <div class="controls">
+          <label
+            >Record ID <input id="record-id" value="1042" inputmode="numeric"
+          /></label>
+          <button id="load" type="button">Load record</button>
+        </div>
+        <pre id="request-path"></pre>
+      </section>
+      <section class="panel">
+        <h2>Record response</h2>
+        <pre id="record"></pre>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const flag = "ctfpawned{digit_record_1337}";
+        const records = new Map([
+          [
+            "1042",
+            {
+              id: 1042,
+              owner: "audit-volunteer",
+              cats: ["Marmalade"],
+              note: "Orientation shift confirmed.",
+            },
+          ],
+          [
+            "1050",
+            {
+              id: 1050,
+              owner: "front-desk",
+              cats: ["Juniper"],
+              note: "Public adoption packet ready.",
+            },
+          ],
+          [
+            "1337",
+            {
+              id: 1337,
+              owner: "cage13-maint",
+              cats: ["Smudge"],
+              note: "Protected adoption priority record.",
+              flag,
+            },
+          ],
+        ]);
+
+        window.__ctfpawned_registerRoute("/api/record", async ({ url }) => {
+          const id = url.searchParams.get("id") || "";
+          const record = records.get(id);
+          if (!record) {
+            return {
+              ok: false,
+              status: 404,
+              json: async () => ({ error: "not found" }),
+            };
+          }
+          return { ok: true, status: 200, json: async () => record };
+        });
+
+        async function loadRecord() {
+          const id = document.querySelector("#record-id").value.trim();
+          const path = "/api/record?id=" + encodeURIComponent(id);
+          document.querySelector("#request-path").textContent = "GET " + path;
+          const response = await fetch(path);
+          const body = await response.json();
+          document.querySelector("#record").textContent = JSON.stringify(
+            body,
+            null,
+            2,
+          );
+        }
+
+        document.querySelector("#load").addEventListener("click", loadRecord);
+        loadRecord();
+      })();
+    </script>
+  </body>
+</html>

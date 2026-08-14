@@ -43,7 +43,8 @@ Every vulnerable target runs in an `<iframe sandbox="allow-scripts">` with **no*
 
 An automated escape suite runs against every target on every commit, asserting all of the above. If it goes red, the build fails. It is a merge blocker, and weakening an assertion to make it pass is not a repair.
 
-Full details in [`SECURITY.md`](./SECURITY.md) and [`docs/TDD.md`](./docs/TDD.md) §5.
+Full details are in [`SECURITY.md`](./SECURITY.md). The sandbox escape checks
+live in [`tests/e2e/escape.spec.ts`](./tests/e2e/escape.spec.ts).
 
 ## About the flags — the honest version
 
@@ -74,7 +75,7 @@ pnpm test         # unit tests
 pnpm test:e2e     # escape, solve, and a11y suites
 ```
 
-Node version is pinned in `.nvmrc`.
+Node 26 is pinned in [`.nvmrc`](./.nvmrc). The package expects pnpm 11 or newer.
 
 ## Adding a challenge
 
@@ -92,11 +93,11 @@ src/challenges/13-yourcat-yourvuln/
 
 `pnpm flag <slug>` generates a flag and its hash. The content lint will tell you what you missed.
 
-## Docs
+## Project references
 
-- [`docs/PRD.md`](./docs/PRD.md) — what this is and why, and what it deliberately is not
-- [`docs/TDD.md`](./docs/TDD.md) — architecture, the isolation model, all twelve challenge designs
-- [`docs/TASKS.md`](./docs/TASKS.md) — the implementation plan
+- [`SECURITY.md`](./SECURITY.md) — security scope, reporting, and sandbox guarantees
+- [`src/challenges`](./src/challenges) — the active challenge roster and target source
+- [`tests/e2e`](./tests/e2e) — browser isolation, solve, launch QA, and accessibility checks
 
 ## Contributing
 

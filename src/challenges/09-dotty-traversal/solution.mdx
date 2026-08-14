@@ -1,0 +1,51 @@
+## Walkthrough
+
+1. Open a public document through the archive viewer and note the filename
+   format the target accepts.
+2. Try asking for a file outside the public folder and observe the cleanup
+   message.
+3. Read the cleanup rule. It removes one obvious parent-directory sequence and
+   then trusts the result.
+4. Use a filename that still contains a parent-directory move after that single
+   cleanup pass.
+5. Ask the viewer for the private incident note.
+6. The target opens the note and displays the flag.
+
+The target was vulnerable because it tried to block dangerous strings instead
+of resolving the final path and checking where it landed. A path can be written
+in more than one form. Removing one suspicious substring does not prove the
+remaining path is safe.
+
+## The fix
+
+Canonicalize the requested path, then verify that the canonical result is still
+inside the allowed directory. Reject anything outside that directory before
+reading the file.
+
+```js
+import path from "node:path";
+
+const publicRoot = path.resolve("/srv/nine-lives/public-docs");
+
+function resolvePublicDocument(name) {
+  const resolved = path.resolve(publicRoot, name);
+  const relative = path.relative(publicRoot, resolved);
+
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    throw new Error("Document is outside the public archive");
+  }
+
+  return resolved;
+}
+```
+
+The production control is canonicalize-then-check. Do not rely on blocklists for
+path traversal defense.
+
+## Recovered
+
+Recovered incident note: "Cage 13 terminal active after closing. User searched
+for adoption priority policy, then opened his own record. No evidence of data
+sale, vandalism, or external contact." The file names Smudge for the first time.
+He was not hiding in the system to steal from Nine Lives. He was trying to be
+noticed.

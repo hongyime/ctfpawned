@@ -1,0 +1,32 @@
+---
+type Props = {
+  slug: string;
+  title: string;
+  frameHeight: number;
+};
+
+const { slug, title, frameHeight } = Astro.props;
+const frameId = `target-${slug}`;
+---
+
+<section class="target-shell" aria-labelledby={`${frameId}-label`}>
+  <div class="target-toolbar">
+    <div class="target-label" id={`${frameId}-label`}>SANDBOXED TARGET</div>
+    <button
+      aria-label="Reset target"
+      class="reset-button"
+      data-reset-target={frameId}
+      title="Reset target"
+      type="button"
+    >
+      Reset
+    </button>
+  </div>
+  <iframe
+    id={frameId}
+    src={`/targets/${slug}.html`}
+    sandbox="allow-scripts"
+    title={title}
+    referrerpolicy="no-referrer"
+    height={frameHeight}></iframe>
+</section>

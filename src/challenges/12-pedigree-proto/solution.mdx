@@ -1,0 +1,60 @@
+## Walkthrough
+
+1. Open the importer and submit a normal JSON update. The target merges it into
+   one adoption record and leaves the verified panel hidden.
+2. Read the merge helper. It recursively copies keys from the uploaded object
+   into a normal JavaScript object.
+3. Submit target-specific JSON that writes through the prototype path and adds
+   the verification property where unrelated objects can inherit it.
+4. Trigger the later record review check.
+5. The unrelated record now appears verified even though that record did not
+   directly contain the field.
+6. The verified pedigree panel appears and shows the final flag.
+
+The target was vulnerable because the merge function trusted special object
+keys. In JavaScript, writing to prototype-related keys can change properties
+that later objects appear to have. The most important part of the lesson is that
+the code path that breaks is not the same code path that parsed the import.
+
+## The fix
+
+Reject dangerous keys during recursive merge and use objects without prototypes
+for dictionaries. Prefer schema validation that accepts only the fields the
+feature actually needs.
+
+```js
+const blockedKeys = new Set(["__proto__", "prototype", "constructor"]);
+
+function safeMerge(target, source) {
+  for (const [key, value] of Object.entries(source)) {
+    if (blockedKeys.has(key)) {
+      throw new Error("Unsafe key in import");
+    }
+
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      const current = target[key] ?? Object.create(null);
+      target[key] = safeMerge(current, value);
+    } else {
+      target[key] = value;
+    }
+  }
+
+  return target;
+}
+
+function validateImport(input) {
+  return adoptionRecordSchema.parse(input);
+}
+```
+
+The production control is allowlisted schema validation plus merge logic that
+does not mutate prototypes. Treat importer input as untrusted code-adjacent
+data.
+
+## Recovered
+
+Recovered final record: "Smudge, cage 13. Prior status: no pedigree, no pending
+adopter. Corrected status: eligible. Reviewer note: the correction was forged,
+but the need was real." Your report names every broken system and the fixes
+Nine Lives has to make. Outcome: Smudge left cage 13 under his own name, with a
+patched system behind him and a signed adoption form in front of him.

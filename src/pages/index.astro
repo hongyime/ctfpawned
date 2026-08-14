@@ -1,0 +1,50 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getVisibleChallenges } from "../lib/challenges";
+import { SITE_DESCRIPTION } from "../lib/site";
+
+const challenges = getVisibleChallenges(!import.meta.env.PROD);
+---
+
+<BaseLayout title="ctfpawned" description={SITE_DESCRIPTION}>
+  <section class="page">
+    <div class="hero">
+      <h1>ctfpawned</h1>
+      <p>
+        Twelve browser-only web-security puzzles in a cat adoption agency with
+        very bad engineering. No account, no Docker, no backend.
+      </p>
+    </div>
+
+    {
+      challenges.length === 0 ? (
+        <div class="empty-state">
+          <h2>No challenges available</h2>
+          <p>
+            The challenge catalog is empty in this build. Check the content
+            metadata and rebuild the site.
+          </p>
+        </div>
+      ) : (
+        <div class="challenge-grid">
+          {challenges.map((challenge) => (
+            <a
+              class={`challenge-card challenge-card-act-${challenge.act}`}
+              href={`/c/${challenge.slug}/`}
+            >
+              <div class="challenge-meta">
+                <span class="tag">Act {challenge.act}</span>
+                <span class="tag">Difficulty {challenge.difficulty}</span>
+              </div>
+              <h2>
+                {challenge.order}. {challenge.cat}: {challenge.title}
+              </h2>
+              <p>{challenge.tagline}</p>
+              <p>{challenge.vulnClass}</p>
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>

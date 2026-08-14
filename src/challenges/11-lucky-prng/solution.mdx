@@ -1,0 +1,43 @@
+## Walkthrough
+
+1. Read the three recent tokens and the displayed timestamp range.
+2. Read the developer note that lists the target's toy number-generator
+   constants.
+3. Reproduce the generator in the console using the same seed search range.
+4. Find the seed that emits the three observed tokens in order.
+5. Advance the generator once more to compute the next token.
+6. Submit the predicted token before asking the target to mint it.
+7. The target accepts the prediction and derives the flag from that token.
+
+The target was vulnerable because the token generator was predictable. Random
+tokens used for sessions need unpredictability, not just variety. A deterministic
+generator with visible constants and a small seed range lets an attacker recover
+state from observations and predict the next value.
+
+## The fix
+
+Use a cryptographically secure random generator for tokens. Make tokens long
+enough to resist guessing, store only a hashed form when possible, and expire
+them quickly.
+
+```js
+import { randomBytes, createHash } from "node:crypto";
+
+function createSessionToken() {
+  return randomBytes(32).toString("base64url");
+}
+
+function storeToken(token) {
+  return createHash("sha256").update(token).digest("hex");
+}
+```
+
+The production control is a CSPRNG. `Math.random()`, timestamp seeds, and
+home-grown generators are not appropriate for authentication tokens.
+
+## Recovered
+
+Recovered token trace: "Lucky's generator predicted cage13-maint's next session
+exactly because the lobby terminal clock was visible on the sign-in screen.
+Session used once, then abandoned." Smudge was careful, but not magical. He
+learned the same brittle systems the audit is now teaching you to fix.

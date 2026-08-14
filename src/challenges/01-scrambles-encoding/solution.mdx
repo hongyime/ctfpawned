@@ -1,0 +1,53 @@
+## Walkthrough
+
+1. Open the target and copy the session blob shown in the member portal.
+2. Decode it with the browser tools. In JavaScript, the important operation is
+   `atob(sessionValue)`, followed by reading the JSON text that comes out.
+3. Notice that the session contains a role field controlled entirely by the
+   decoded blob.
+4. Change the role from the volunteer value to the staff value expected by the
+   target.
+5. Encode the modified JSON again with `btoa(...)`.
+6. Paste the new blob back into the portal and refresh the session preview.
+7. The staff panel renders and shows the flag.
+
+The target was vulnerable because it treated a readable transport format as a
+security boundary. Encoding changes how bytes are represented. It does not make
+the contents secret, authentic, or tamper-resistant. Anyone who can read and
+write the browser-held value can change the claims inside it.
+
+## The fix
+
+Do not put trusted authorization claims in unsigned client-controlled data. Use
+an opaque session identifier and look up the trusted role on the server, or sign
+the claims with a server-held key and reject tampered values.
+
+```js
+// Server-side request handling, not target-side browser code.
+async function loadSession(request) {
+  const sessionId = request.cookies.get("session_id");
+  if (!sessionId) return null;
+
+  const session = await sessions.findById(sessionId);
+  if (!session || session.expiresAt < Date.now()) return null;
+
+  return {
+    userId: session.userId,
+    role: session.roleFromDatabase,
+  };
+}
+
+function canViewStaffPanel(session) {
+  return session?.role === "staff";
+}
+```
+
+The production control is server-side authorization. The browser may store a
+session pointer, but it must not be the authority for what that session means.
+
+## Recovered
+
+Recovered portal note, week one: "Scrambles replaced the plain session preview
+with a padlock icon and said the blob now looks less edible. No data model
+change requested." The note is harmless by itself. It mostly proves the audit
+started exactly where Nine Lives thought the risk was lowest.

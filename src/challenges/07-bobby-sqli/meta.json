@@ -1,0 +1,20 @@
+{
+  "slug": "07-bobby-sqli",
+  "order": 7,
+  "act": 2,
+  "cat": "Bobby",
+  "title": "SQL injection",
+  "tagline": "Turn the comforting live query display into a private-note reader.",
+  "vulnClass": "SQL injection",
+  "cwe": "CWE-89",
+  "difficulty": 3,
+  "tags": ["sql-injection", "database", "query-concatenation"],
+  "flagHash": "a0b0e3bb19763d34f78d3116667dab7074a61869a2e4e71b5e4c60b117fb6c08",
+  "frameHeight": 660,
+  "mobileOk": true,
+  "status": "ready",
+  "targetCsp": {
+    "connectSrc": "'self'",
+    "wasm": true
+  }
+}

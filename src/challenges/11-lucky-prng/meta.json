@@ -1,0 +1,16 @@
+{
+  "slug": "11-lucky-prng",
+  "order": 11,
+  "act": 3,
+  "cat": "Lucky",
+  "title": "Weak PRNG token prediction",
+  "tagline": "Recover the toy generator state from three visible tokens and predict the next one.",
+  "vulnClass": "Weak PRNG token prediction",
+  "cwe": "CWE-338",
+  "difficulty": 4,
+  "tags": ["prng", "tokens", "prediction"],
+  "flagHash": "c032963f44e9278a9d6c36679fd3aeb72a6f26395a8f73544c47dc88a1c05f6c",
+  "frameHeight": 700,
+  "mobileOk": true,
+  "status": "ready"
+}

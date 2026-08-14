@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.astro/
+public/targets/
+playwright-report/
+test-results/
+pnpm-lock.yaml
+.gitignore
+.prettierignore
+.nvmrc
+README.md
+SECURITY.md
+drafts/**/*.md
+.agents/**/*.md
+.github/**
+AGENTS.md
+CONTRIBUTING.md

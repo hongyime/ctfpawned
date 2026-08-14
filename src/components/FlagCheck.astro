@@ -1,0 +1,25 @@
+---
+type Props = {
+  slug: string;
+  flagHash: string;
+};
+
+const { slug, flagHash } = Astro.props;
+---
+
+<form class="flag-check" data-flag-check data-slug={slug} data-hash={flagHash}>
+  <label>
+    Flag
+    <input
+      autocomplete="off"
+      name="flag"
+      placeholder="ctfpawned{...}"
+      spellcheck="false"
+    />
+  </label>
+  <button type="submit">Check flag</button>
+  <output
+    class="flag-result flag-result-idle"
+    aria-live="polite"
+    data-flag-result></output>
+</form>

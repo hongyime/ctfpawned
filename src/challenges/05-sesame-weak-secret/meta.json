@@ -1,0 +1,16 @@
+{
+  "slug": "05-sesame-weak-secret",
+  "order": 5,
+  "act": 2,
+  "cat": "Sesame",
+  "title": "JWT claim tampering with a weak secret",
+  "tagline": "Recover the weekend signing phrase and re-sign a stronger role.",
+  "vulnClass": "JWT weak secret",
+  "cwe": "CWE-321",
+  "difficulty": 3,
+  "tags": ["jwt", "weak-secret", "hmac"],
+  "flagHash": "8075b958061ae45f0701e538ec6ce2af7ff4d6e6227ec7f12c202050d5f8ec43",
+  "frameHeight": 700,
+  "mobileOk": true,
+  "status": "ready"
+}
