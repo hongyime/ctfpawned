@@ -75,7 +75,8 @@ pnpm test         # unit tests
 pnpm test:e2e     # escape, solve, and a11y suites
 ```
 
-Node 26 is pinned in [`.nvmrc`](./.nvmrc). The package expects pnpm 11 or newer.
+Node 24 is pinned in [`.nvmrc`](./.nvmrc) for Vercel compatibility. The package
+expects pnpm 11 or newer.
 
 ## Adding a challenge
 

@@ -6,7 +6,7 @@
   "description": "Twelve browser-only web-security puzzles wrapped in a cat adoption agency story.",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=26.0.0",
+    "node": "24.x",
     "pnpm": ">=11.0.0"
   },
   "scripts": {
