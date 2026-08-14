@@ -6,6 +6,7 @@ const readyChallenges = allChallengeMetas.filter(
 );
 const shellPaths = [
   "/",
+  "/primer/",
   "/about/",
   ...readyChallenges.flatMap((challenge) => [
     `/c/${challenge.slug}/`,
@@ -32,7 +33,7 @@ test.describe("launch QA", () => {
       await expect(page.locator("main")).toBeVisible();
 
       const layout = await page.evaluate(() => ({
-        viewport: document.documentElement.clientWidth,
+        viewport: window.innerWidth,
         scroll: document.documentElement.scrollWidth,
       }));
 
@@ -55,6 +56,9 @@ test.describe("launch QA", () => {
       await expect(
         page.getByRole("button", { name: "Reset target" }),
       ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Reveal next hint" }),
+      ).toBeVisible();
       await expect(page.locator(".content-panel").first()).toContainText(
         "Win condition:",
       );
@@ -68,11 +72,44 @@ test.describe("launch QA", () => {
       await page.goto(`/targets/${challenge.slug}.html`);
 
       const layout = await page.evaluate(() => ({
-        viewport: document.documentElement.clientWidth,
+        viewport: window.innerWidth,
         scroll: document.documentElement.scrollWidth,
       }));
 
       expect(layout.scroll).toBeLessThanOrEqual(layout.viewport + 1);
     });
   }
+
+  for (const challenge of readyChallenges.filter(
+    (candidate) => candidate.mobileOk,
+  )) {
+    test(`${challenge.slug} mobile-ready challenge holds at 360px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 360, height: 800 });
+      await page.goto(`/c/${challenge.slug}/`);
+
+      const layout = await page.evaluate(() => ({
+        viewport: window.innerWidth,
+        scroll: document.documentElement.scrollWidth,
+      }));
+
+      expect(layout.scroll).toBeLessThanOrEqual(layout.viewport + 1);
+      await expect(page.locator(".desktop-preferred")).toHaveCount(0);
+    });
+  }
+
+  test("desktop-preferred badges render from challenge metadata", async ({
+    page,
+  }) => {
+    const desktopPreferred = readyChallenges.filter(
+      (challenge) => !challenge.mobileOk,
+    );
+
+    await page.goto("/");
+
+    await expect(page.locator(".desktop-preferred")).toHaveCount(
+      desktopPreferred.length,
+    );
+  });
 });

@@ -40,8 +40,27 @@ const Solution =
       <h1>{challenge.cat}: solution</h1>
       <p>{challenge.vulnClass}</p>
     </div>
-    <article class="content-panel">
-      {Solution ? <Solution /> : <p>Challenge solution is missing.</p>}
-    </article>
+    <section
+      class="solution-gate"
+      data-solution-gate
+      data-slug={challenge.slug}
+    >
+      <div class="content-panel" data-solution-prompt>
+        <h2>Show solution?</h2>
+        <p>
+          Revealing this page marks the challenge as given up in local progress.
+        </p>
+        <button class="danger-action" type="button" data-solution-reveal>
+          Show me anyway
+        </button>
+      </div>
+      <article
+        class="content-panel solution-content"
+        data-solution-content
+        hidden
+      >
+        {Solution ? <Solution /> : <p>Challenge solution is missing.</p>}
+      </article>
+    </section>
   </section>
 </BaseLayout>

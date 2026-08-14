@@ -81,6 +81,7 @@ test.describe("public launch metadata", () => {
     expect(response.status()).toBe(200);
     expect(response.headers()["content-type"]).toContain("application/xml");
     expect(body).toContain(`<loc>${SITE_URL}/</loc>`);
+    expect(body).toContain(`<loc>${SITE_URL}/primer/</loc>`);
     expect(body).toContain(`<loc>${SITE_URL}/about/</loc>`);
     expect(body).not.toContain("/targets/");
 

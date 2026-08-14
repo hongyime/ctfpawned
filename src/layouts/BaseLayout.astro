@@ -23,7 +23,7 @@ const imageUrl = absoluteUrl(SITE_IMAGE_PATH);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f3f7ed" />
+    <meta name="theme-color" content="Canvas" />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:site_name" content={SITE_TITLE} />
@@ -52,6 +52,7 @@ const imageUrl = absoluteUrl(SITE_IMAGE_PATH);
           <a class="brand" href="/">ctfpawned</a>
           <div class="nav-links">
             <a href="/">Challenges</a>
+            <a href="/primer/">Primer</a>
             <a href="/about/">About</a>
           </div>
         </nav>
@@ -60,8 +61,9 @@ const imageUrl = absoluteUrl(SITE_IMAGE_PATH);
         <slot />
       </main>
       <footer class="site-footer">
-        These are toy targets for systems you own or have permission to test.
-        Attacking real systems without permission is illegal.
+        Legal scope: use these toy targets only here, or on systems you own or
+        have explicit permission to test. Attacking real systems without
+        permission is illegal.
       </footer>
     </div>
   </body>

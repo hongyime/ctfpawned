@@ -11,6 +11,6 @@
   "tags": ["path-traversal", "archive", "canonicalization"],
   "flagHash": "300df9777e4f8ca7fef8553964b0b22aa0a31ddd59b7963e98abfadead67ed38",
   "frameHeight": 620,
-  "mobileOk": true,
+  "mobileOk": false,
   "status": "ready"
 }

@@ -20,6 +20,7 @@ const { slug, flagHash } = Astro.props;
   <button type="submit">Check flag</button>
   <output
     class="flag-result flag-result-idle"
+    role="status"
     aria-live="polite"
     data-flag-result></output>
 </form>

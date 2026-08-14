@@ -11,7 +11,12 @@ const frameId = `target-${slug}`;
 
 <section class="target-shell" aria-labelledby={`${frameId}-label`}>
   <div class="target-toolbar">
-    <div class="target-label" id={`${frameId}-label`}>SANDBOXED TARGET</div>
+    <div class="target-label" id={`${frameId}-label`}>
+      DANGER: SANDBOXED TARGET
+    </div>
+    <div class="target-repeat" aria-hidden="true">
+      DANGER TARGET / DANGER TARGET / DANGER TARGET
+    </div>
     <button
       aria-label="Reset target"
       class="reset-button"

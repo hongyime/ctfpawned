@@ -1,7 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ctfpawned">
-  <rect width="64" height="64" fill="#f3f7ed"/>
-  <rect x="6" y="6" width="52" height="52" fill="#fffdf4" stroke="#101010" stroke-width="4"/>
-  <path d="M19 29h6v-5h4v18h-4v-5h-6v5h-4V24h4v5Zm20-5c5 0 9 4 9 9s-4 9-9 9h-6V24h6Zm-2 4v10h2c3 0 5-2 5-5s-2-5-5-5h-2Z" fill="#101010"/>
-  <path d="M8 8h48v8H8z" fill="#7bd389"/>
-  <path d="M8 48h48v8H8z" fill="#b892ff"/>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  role="img"
+  aria-label="ctfpawned"
+>
+  <rect width="64" height="64" fill="honeydew" />
+  <rect
+    x="6"
+    y="6"
+    width="52"
+    height="52"
+    fill="ivory"
+    stroke="black"
+    stroke-width="4"
+  />
+  <path
+    d="M19 29h6v-5h4v18h-4v-5h-6v5h-4V24h4v5Zm20-5c5 0 9 4 9 9s-4 9-9 9h-6V24h6Zm-2 4v10h2c3 0 5-2 5-5s-2-5-5-5h-2Z"
+    fill="black"
+  />
+  <path d="M8 8h48v8H8z" fill="mediumseagreen" />
+  <path d="M8 48h48v8H8z" fill="mediumpurple" />
 </svg>

@@ -1,0 +1,30 @@
+---
+import type { ChallengeMeta } from "../lib/schema";
+
+type Props = {
+  challenges: ChallengeMeta[];
+};
+
+const { challenges } = Astro.props;
+---
+
+<section class="story-panel content-panel" data-story-panel>
+  <div class="panel-heading">
+    <h2>Recovered trail</h2>
+    <span class="tag" data-story-status>0/{challenges.length} recovered</span>
+  </div>
+  <ol class="story-list">
+    {
+      challenges.map((challenge) => (
+        <li data-story-fragment data-slug={challenge.slug}>
+          <span class="story-kicker">
+            {challenge.order}. {challenge.cat}
+          </span>
+          <p data-story-text aria-live="polite">
+            Redacted until this challenge is solved.
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+</section>

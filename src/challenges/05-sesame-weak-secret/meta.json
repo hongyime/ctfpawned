@@ -11,6 +11,6 @@
   "tags": ["jwt", "weak-secret", "hmac"],
   "flagHash": "8075b958061ae45f0701e538ec6ce2af7ff4d6e6227ec7f12c202050d5f8ec43",
   "frameHeight": 700,
-  "mobileOk": true,
+  "mobileOk": false,
   "status": "ready"
 }

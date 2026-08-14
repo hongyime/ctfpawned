@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Primer | ctfpawned"
+  description="Browser devtools and frame-context primer for ctfpawned."
+>
+  <section class="page">
+    <div class="hero">
+      <h1>Primer</h1>
+      <p>
+        The targets are sandboxed frames. Use devtools against the frame you are
+        testing, and keep the parent shell separate from the vulnerable toy app.
+      </p>
+    </div>
+    <article class="content-panel">
+      <h2>Devtools baseline</h2>
+      <p>
+        Inspect elements, storage, cookies, network activity, and console output
+        inside the target frame. If a console command touches the wrong page,
+        switch the execution context to the frame whose title matches the
+        challenge.
+      </p>
+      <p>
+        Chromium, Firefox, and WebKit expose frame selectors differently, but
+        each browser has a console context picker and an element inspector that
+        can focus the embedded target.
+      </p>
+      <h2>Frame context</h2>
+      <p>
+        The parent page tracks progress and checks flags. The target frame is
+        the intentionally vulnerable app. A solution should explain what broke
+        in the target and what a production system would change.
+      </p>
+    </article>
+  </section>
+</BaseLayout>

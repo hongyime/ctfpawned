@@ -10,6 +10,9 @@
   --accent: #ffd400;
   --danger: #ff4b3e;
   --info: #3e8bff;
+  --success: #136d2d;
+  --error: #b42318;
+  --muted: #4f4f4f;
   --act-1: #7bd389;
   --act-2: #ffa552;
   --act-3: #b892ff;
@@ -25,6 +28,12 @@ html {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -123,6 +132,63 @@ input {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
 }
 
+.progress-strip {
+  align-items: center;
+  background: var(--ink);
+  border: var(--border-w) solid var(--ink);
+  color: var(--surface);
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr) minmax(9rem, 18rem);
+  margin-bottom: 1.25rem;
+  padding: 0.85rem;
+}
+
+.progress-strip div {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.progress-strip strong {
+  font-size: 1.1rem;
+}
+
+.progress-strip meter {
+  block-size: 1.25rem;
+  inline-size: 100%;
+}
+
+.act-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.act-section {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.act-heading {
+  align-items: end;
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+}
+
+.act-heading h2 {
+  font-size: clamp(1.65rem, 3vw, 2.5rem);
+  line-height: 1;
+  margin: 0;
+}
+
+.act-heading p {
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0;
+}
+
 .challenge-card {
   --card-accent: var(--accent);
   background:
@@ -135,7 +201,31 @@ input {
   gap: 0.75rem;
   min-height: 15rem;
   padding: 1.6rem 1rem 1rem;
+  position: relative;
   text-decoration: none;
+}
+
+.cat-portrait {
+  color: var(--ink);
+  inline-size: 5rem;
+}
+
+.cat-portrait svg,
+.cat-portrait-large svg {
+  block-size: auto;
+  display: block;
+  inline-size: 100%;
+}
+
+.cat-portrait-large {
+  color: var(--ink);
+  inline-size: clamp(7rem, 18vw, 11rem);
+  justify-self: end;
+}
+
+.challenge-hero {
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .challenge-card-act-1 {
@@ -156,6 +246,7 @@ input {
 }
 
 .challenge-card h2,
+.challenge-card h3,
 .empty-state h2 {
   font-size: 1.35rem;
   line-height: 1.1;
@@ -184,7 +275,29 @@ input {
 }
 
 .tag:first-child {
-  background: var(--card-accent);
+  background: var(--card-accent, var(--accent));
+}
+
+.desktop-preferred {
+  background: var(--ink);
+  color: var(--surface);
+}
+
+.solved-glyph {
+  align-self: end;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 900;
+  justify-self: start;
+  min-inline-size: 5.75rem;
+  padding: 0.25rem 0.45rem;
+}
+
+.challenge-card-solved .solved-glyph {
+  background: var(--success);
+  color: var(--surface);
 }
 
 .empty-state {
@@ -210,6 +323,7 @@ input {
   );
   border-bottom: var(--border-w) solid var(--ink);
   display: flex;
+  gap: 0.75rem;
   justify-content: space-between;
   min-height: 3.25rem;
   padding: 0.5rem 0.75rem;
@@ -220,10 +334,30 @@ input {
   border: 2px solid var(--ink);
   font-size: 0.875rem;
   font-weight: 900;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
   padding: 0.3rem 0.5rem;
 }
 
-.reset-button {
+.target-repeat {
+  background: var(--danger);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  flex: 1;
+  font-size: 0.75rem;
+  font-weight: 900;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  overflow: hidden;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.reset-button,
+.primary-action,
+.secondary-action,
+.danger-action {
   align-items: center;
   background: var(--paper);
   border: 2px solid var(--ink);
@@ -233,10 +367,29 @@ input {
   justify-content: center;
   min-height: 2.25rem;
   padding-inline: 0.65rem;
+  text-decoration: none;
 }
 
-.reset-button:hover {
+.reset-button:hover,
+.primary-action:hover,
+.secondary-action:hover,
+.danger-action:hover {
   background: var(--accent);
+}
+
+.primary-action {
+  background: var(--accent);
+  font-weight: 900;
+}
+
+.secondary-action {
+  background: var(--surface);
+  font-weight: 900;
+}
+
+.danger-action {
+  background: var(--danger);
+  font-weight: 900;
 }
 
 .target-shell iframe {
@@ -245,6 +398,12 @@ input {
   display: block;
   min-height: 12.5rem;
   width: 100%;
+}
+
+.target-shell iframe:focus,
+.target-shell iframe:focus-visible {
+  outline: 4px solid var(--info);
+  outline-offset: 3px;
 }
 
 .flag-check,
@@ -294,17 +453,110 @@ input {
 }
 
 .flag-result-valid {
-  color: #136d2d;
+  color: var(--success);
 }
 
 .flag-result-invalid {
-  color: #b42318;
+  color: var(--error);
 }
 
 .content-panel {
   line-height: 1.65;
   max-width: 100%;
   overflow-wrap: anywhere;
+}
+
+.panel-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.panel-heading h2 {
+  margin: 0;
+}
+
+.hint-drawer,
+.story-panel,
+.progress-tools {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.hint-list,
+.story-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.hint-item,
+.story-list li {
+  border: 2px solid var(--ink);
+  padding: 0.65rem;
+}
+
+.story-list li {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--paper) 0 0.6rem,
+    var(--surface) 0.6rem 1.2rem
+  );
+}
+
+.story-fragment-open {
+  background: var(--surface);
+}
+
+.story-kicker {
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 900;
+  margin-bottom: 0.3rem;
+}
+
+.quiet-status {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.solution-link-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.solution-content[hidden],
+[hidden] {
+  display: none !important;
+}
+
+.progress-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.progress-import-field {
+  display: grid;
+  font-weight: 900;
+  gap: 0.4rem;
+}
+
+.progress-import-field textarea {
+  border: 2px solid var(--ink);
+  box-sizing: border-box;
+  color: var(--ink);
+  font: inherit;
+  max-width: 100%;
+  min-height: 7rem;
+  resize: vertical;
 }
 
 .content-panel h2,
@@ -336,6 +588,26 @@ input {
 }
 
 @media (max-width: 720px) {
+  .progress-strip,
+  .act-heading,
+  .challenge-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .cat-portrait-large {
+    justify-self: start;
+  }
+
+  .target-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .target-repeat {
+    flex: none;
+    white-space: normal;
+  }
+
   .flag-check {
     align-items: stretch;
     grid-template-columns: 1fr;

@@ -27,7 +27,14 @@ describe("vercel header config", () => {
       )
       .map((rule) => rule.source);
 
-    expect(shellSources).toEqual(["/", "/about", "/about/(.*)", "/c/(.*)"]);
+    expect(shellSources).toEqual([
+      "/",
+      "/primer",
+      "/primer/(.*)",
+      "/about",
+      "/about/(.*)",
+      "/c/(.*)",
+    ]);
     expect(shellSources).not.toContain("/(.*)");
     expect(shellSources.every((source) => !source.startsWith("/targets"))).toBe(
       true,

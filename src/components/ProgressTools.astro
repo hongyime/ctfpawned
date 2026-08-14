@@ -1,0 +1,27 @@
+<section class="progress-tools content-panel" data-progress-tools>
+  <div class="panel-heading">
+    <h2>Progress</h2>
+    <span class="tag" data-progress-tools-count>0 solved</span>
+  </div>
+  <div class="progress-actions">
+    <button class="primary-action" type="button" data-progress-export>
+      Export
+    </button>
+    <button class="secondary-action" type="button" data-progress-import>
+      Import
+    </button>
+    <button class="danger-action" type="button" data-progress-clear>
+      Clear
+    </button>
+  </div>
+  <label class="progress-import-field">
+    Progress payload
+    <textarea
+      data-progress-import-input
+      rows="4"
+      spellcheck="false"
+      autocomplete="off"></textarea>
+  </label>
+  <output class="quiet-status" aria-live="polite" data-progress-tools-status
+  ></output>
+</section>

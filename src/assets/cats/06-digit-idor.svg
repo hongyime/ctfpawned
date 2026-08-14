@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="digit-title digit-desc">
+  <title id="digit-title">Digit</title>
+  <desc id="digit-desc">A cat with keypad dots for the object authorization puzzle.</desc>
+  <path d="M24 42 18 18l22 16h16l22-16-6 24c8 8 10 28-5 39-11 8-27 8-38 0-15-11-13-31-5-39Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="35" y="55" width="26" height="20" rx="1" fill="var(--card-accent, var(--accent))" stroke="var(--ink)" stroke-width="4"/>
+  <circle cx="42" cy="61" r="2" fill="var(--ink)"/>
+  <circle cx="48" cy="61" r="2" fill="var(--ink)"/>
+  <circle cx="54" cy="61" r="2" fill="var(--ink)"/>
+  <circle cx="42" cy="68" r="2" fill="var(--ink)"/>
+  <circle cx="48" cy="68" r="2" fill="var(--ink)"/>
+  <circle cx="54" cy="68" r="2" fill="var(--ink)"/>
+  <circle cx="35" cy="49" r="3" fill="var(--ink)"/>
+  <circle cx="61" cy="49" r="3" fill="var(--ink)"/>
+</svg>

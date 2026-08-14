@@ -1,0 +1,25 @@
+---
+type Props = {
+  slug: string;
+  hintCount: number;
+};
+
+const { slug, hintCount } = Astro.props;
+---
+
+<section
+  class="hint-drawer content-panel"
+  data-hint-drawer
+  data-slug={slug}
+  data-hint-count={hintCount}
+>
+  <div class="panel-heading">
+    <h2>Hints</h2>
+    <span class="tag" data-hint-count-label>0/{hintCount} revealed</span>
+  </div>
+  <ol class="hint-list" data-hint-list aria-live="polite"></ol>
+  <button class="primary-action" type="button" data-hint-next>
+    Reveal next hint
+  </button>
+  <p class="quiet-status" data-hint-status aria-live="polite"></p>
+</section>

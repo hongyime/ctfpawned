@@ -1,20 +1,23 @@
 ---
 import ChallengeFrame from "../../../components/ChallengeFrame.astro";
 import FlagCheck from "../../../components/FlagCheck.astro";
+import HintDrawer from "../../../components/HintDrawer.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
+import { getCatArt } from "../../../lib/cat-art";
 import {
   getChallengeBySlug,
   getVisibleChallenges,
 } from "../../../lib/challenges";
+import { parseHintSections } from "../../../lib/content-parts";
 
 const briefModules = import.meta.glob<{ default: AstroComponentFactory }>(
   "../../../challenges/*/brief.mdx",
   { eager: true },
 );
-const hintModules = import.meta.glob<{ default: AstroComponentFactory }>(
+const hintModules = import.meta.glob<string>(
   "../../../challenges/*/hints.mdx",
-  { eager: true },
+  { eager: true, import: "default", query: "?raw" },
 );
 
 export function getStaticPaths() {
@@ -34,8 +37,9 @@ if (!challenge) {
 
 const Brief =
   briefModules[`../../../challenges/${challenge.slug}/brief.mdx`]?.default;
-const Hints =
-  hintModules[`../../../challenges/${challenge.slug}/hints.mdx`]?.default;
+const hintCount = parseHintSections(
+  hintModules[`../../../challenges/${challenge.slug}/hints.mdx`] ?? "",
+).length;
 ---
 
 <BaseLayout
@@ -43,9 +47,26 @@ const Hints =
   description={challenge.tagline}
 >
   <section class="page">
-    <div class="hero">
-      <h1>{challenge.cat}</h1>
-      <p>{challenge.tagline}</p>
+    <div class={`hero challenge-hero challenge-card-act-${challenge.act}`}>
+      <div>
+        <h1>{challenge.cat}</h1>
+        <p>{challenge.tagline}</p>
+        <div class="challenge-meta">
+          <span class="tag">Act {challenge.act}</span>
+          <span class="tag">Difficulty {challenge.difficulty}</span>
+          <span class="tag">{challenge.vulnClass}</span>
+          {
+            !challenge.mobileOk ? (
+              <span class="tag desktop-preferred">Desktop preferred</span>
+            ) : null
+          }
+        </div>
+      </div>
+      <div
+        class="cat-portrait-large"
+        aria-hidden="true"
+        set:html={getCatArt(challenge.slug)}
+      />
     </div>
     <ChallengeFrame
       slug={challenge.slug}
@@ -56,9 +77,11 @@ const Hints =
     <article class="content-panel">
       {Brief ? <Brief /> : <p>Challenge brief is missing.</p>}
     </article>
-    <article class="content-panel">
-      <h2>Hints</h2>
-      {Hints ? <Hints /> : <p>Challenge hints are missing.</p>}
-    </article>
+    <HintDrawer slug={challenge.slug} hintCount={hintCount} />
+    <div class="solution-link-row">
+      <a class="secondary-action" href={`/c/${challenge.slug}/solution/`}>
+        Open solution
+      </a>
+    </div>
   </section>
 </BaseLayout>

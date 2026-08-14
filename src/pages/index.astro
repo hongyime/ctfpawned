@@ -1,9 +1,26 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import StoryPanel from "../components/StoryPanel.astro";
+import { getCatArt } from "../lib/cat-art";
 import { getVisibleChallenges } from "../lib/challenges";
 import { SITE_DESCRIPTION } from "../lib/site";
+import { getStoryCatalog } from "../lib/story";
 
 const challenges = getVisibleChallenges(!import.meta.env.PROD);
+const story = getStoryCatalog();
+const sections = story.enabled
+  ? story.acts.map((act) => ({
+      ...act,
+      challenges: challenges.filter((challenge) => challenge.act === act.id),
+    }))
+  : [
+      {
+        id: 0,
+        title: "Challenges",
+        description: SITE_DESCRIPTION,
+        challenges,
+      },
+    ];
 ---
 
 <BaseLayout title="ctfpawned" description={SITE_DESCRIPTION}>
@@ -15,6 +32,18 @@ const challenges = getVisibleChallenges(!import.meta.env.PROD);
         very bad engineering. No account, no Docker, no backend.
       </p>
     </div>
+    <section class="progress-strip" aria-label="Progress">
+      <div>
+        <strong data-progress-summary>0/{challenges.length} solved</strong>
+        <span data-progress-detail>Start anywhere.</span>
+      </div>
+      <meter
+        data-progress-meter
+        min="0"
+        max={challenges.length}
+        value="0"
+        aria-label="Solved challenges"></meter>
+    </section>
 
     {
       challenges.length === 0 ? (
@@ -26,24 +55,63 @@ const challenges = getVisibleChallenges(!import.meta.env.PROD);
           </p>
         </div>
       ) : (
-        <div class="challenge-grid">
-          {challenges.map((challenge) => (
-            <a
-              class={`challenge-card challenge-card-act-${challenge.act}`}
-              href={`/c/${challenge.slug}/`}
-            >
-              <div class="challenge-meta">
-                <span class="tag">Act {challenge.act}</span>
-                <span class="tag">Difficulty {challenge.difficulty}</span>
-              </div>
-              <h2>
-                {challenge.order}. {challenge.cat}: {challenge.title}
-              </h2>
-              <p>{challenge.tagline}</p>
-              <p>{challenge.vulnClass}</p>
-            </a>
-          ))}
-        </div>
+        <>
+          {story.enabled ? <StoryPanel challenges={challenges} /> : null}
+          <div class="act-list">
+            {sections.map((section) =>
+              section.challenges.length > 0 ? (
+                <section
+                  class="act-section"
+                  aria-labelledby={`act-${section.id}`}
+                >
+                  <div class="act-heading">
+                    <h2 id={`act-${section.id}`}>{section.title}</h2>
+                    <p>{section.description}</p>
+                  </div>
+                  <div class="challenge-grid">
+                    {section.challenges.map((challenge) => (
+                      <a
+                        class={`challenge-card challenge-card-act-${challenge.act}`}
+                        href={`/c/${challenge.slug}/`}
+                        data-challenge-card
+                        data-slug={challenge.slug}
+                      >
+                        <div
+                          class="cat-portrait"
+                          aria-hidden="true"
+                          set:html={getCatArt(challenge.slug)}
+                        />
+                        <div class="challenge-meta">
+                          <span class="tag">Act {challenge.act}</span>
+                          <span class="tag">
+                            Difficulty {challenge.difficulty}
+                          </span>
+                          {!challenge.mobileOk ? (
+                            <span class="tag desktop-preferred">
+                              Desktop preferred
+                            </span>
+                          ) : null}
+                        </div>
+                        <h3>
+                          {challenge.order}. {challenge.cat}: {challenge.title}
+                        </h3>
+                        <p>{challenge.tagline}</p>
+                        <p>{challenge.vulnClass}</p>
+                        <span
+                          class="solved-glyph"
+                          data-solved-glyph
+                          aria-label="Unsolved"
+                        >
+                          Unsolved
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              ) : null,
+            )}
+          </div>
+        </>
       )
     }
   </section>

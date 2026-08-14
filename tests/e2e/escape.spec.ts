@@ -12,6 +12,7 @@ function serializedParentStorage() {
 
 const parentShellPaths = [
   "/",
+  "/primer/",
   "/about/",
   ...allChallengeMetas
     .filter((challenge) => challenge.status === "ready")

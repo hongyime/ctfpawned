@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { getVisibleChallenges } from "../lib/challenges";
 import { absoluteUrl } from "../lib/site";
 
-const staticRoutes = ["/", "/about/"];
+const staticRoutes = ["/", "/primer/", "/about/"];
 
 function routeXml(pathname: string) {
   return [

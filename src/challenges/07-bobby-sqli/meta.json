@@ -11,7 +11,7 @@
   "tags": ["sql-injection", "database", "query-concatenation"],
   "flagHash": "a0b0e3bb19763d34f78d3116667dab7074a61869a2e4e71b5e4c60b117fb6c08",
   "frameHeight": 660,
-  "mobileOk": true,
+  "mobileOk": false,
   "status": "ready",
   "targetCsp": {
     "connectSrc": "'self'",

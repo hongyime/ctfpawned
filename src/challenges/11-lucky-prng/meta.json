@@ -11,6 +11,6 @@
   "tags": ["prng", "tokens", "prediction"],
   "flagHash": "c032963f44e9278a9d6c36679fd3aeb72a6f26395a8f73544c47dc88a1c05f6c",
   "frameHeight": 700,
-  "mobileOk": true,
+  "mobileOk": false,
   "status": "ready"
 }
