@@ -1,0 +1,6 @@
+name: ctfpawned CodeQL config
+
+# Challenge targets intentionally contain vulnerable JavaScript as browser-only
+# CTF fixtures. Isolation and solve behavior are enforced by Playwright suites.
+paths-ignore:
+  - "src/challenges/**/target.html"
