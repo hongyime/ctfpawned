@@ -1,0 +1,55 @@
+## Walkthrough
+
+1. Open the treat-ordering target and confirm that the volunteer menu is shown.
+2. In the browser devtools console, switch the console context from the parent
+   page to the sandboxed target frame. This matters because the challenge's
+   browser state lives inside the frame.
+3. Read the current cookie string with `document.cookie`.
+4. Set the value the target checks for staff access, for example the target's
+   expected `staff=true` cookie.
+5. Trigger the page's menu refresh or reload the frame.
+6. The staff treat menu appears, and the target derives the flag from the cookie
+   string that unlocked it.
+
+The target was vulnerable because it treated a client-controlled cookie value as
+authorization. Cookies can be set by the browser. A cookie is just storage
+unless a trusted server validates it and ties it to a real session.
+
+## The fix
+
+Use a server-issued, HttpOnly, Secure, SameSite session cookie that contains an
+opaque session ID. Store authorization state on the server. If a stateless token
+is necessary, sign it and validate it before trusting any claim.
+
+```js
+function setSessionCookie(response, sessionId) {
+  response.headers.append(
+    "set-cookie",
+    [
+      `session_id=${sessionId}`,
+      "HttpOnly",
+      "Secure",
+      "SameSite=Lax",
+      "Path=/",
+      "Max-Age=3600",
+    ].join("; "),
+  );
+}
+
+async function canOrderStaffTreats(request) {
+  const sessionId = request.cookies.get("session_id");
+  const session = await sessions.findById(sessionId);
+
+  return session?.role === "staff";
+}
+```
+
+The production control is server-side authorization. Client-visible cookies may
+carry preferences, not proof of privilege.
+
+## Recovered
+
+Recovered kiosk entry: "Biscuit denied changing the treat rules and blamed
+volunteers for bringing their own labels. Treat inventory reconciled anyway."
+Nothing in the record names an intruder. It does show that Nine Lives often
+finds the symptom and misses the trust boundary.

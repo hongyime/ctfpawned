@@ -1,0 +1,19 @@
+## Scenario
+
+Dotty runs the document archive. She keeps intake forms, adoption packets,
+donation letters, and incident notes in a tidy virtual file cabinet. The public
+viewer is meant to open files from the public folder only. Dotty even added a
+cleanup step to remove suspicious path pieces before the archive reads a file.
+
+The target starts with a few safe document names. They load normally and show
+that the viewer works. Somewhere else in the virtual file cabinet is a private
+incident note from the night the audit stopped feeling routine. The public
+viewer should never be able to open it.
+
+Your task is to check whether Dotty's cleanup actually confines reads to the
+public folder, or whether a carefully written filename can still point the
+viewer somewhere else. The filesystem is entirely in memory and exists only
+inside the sandbox.
+
+Win condition: open the private incident note through the document viewer and
+recover the flag written inside it.

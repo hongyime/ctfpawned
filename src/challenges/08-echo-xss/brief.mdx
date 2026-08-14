@@ -1,0 +1,19 @@
+## Scenario
+
+Echo built the site search page and is delighted that it repeats the visitor's
+search back in a friendly sentence. If someone searches for "calico", the page
+answers as if it heard them. If someone searches for "donation receipt", it
+does the same. Echo thinks this makes the page feel polite.
+
+The target holds a pretend session token in page memory and renders search
+results in the same document. The success area is a small output box reserved
+for this exercise. Pop-up boxes are disabled by the sandbox, and the task is not
+to make noise. The task is to prove that text reflected into the page can become
+code that reads data in the page's context.
+
+Everything stays inside the target. The network is blocked, the parent page has
+no message listener, and the token is not real. You are demonstrating impact
+without exfiltrating anything.
+
+Win condition: cause the target to copy its pretend session token into the
+exercise output box and recover the flag derived from that token.

@@ -1,0 +1,48 @@
+## Walkthrough
+
+1. Search for ordinary text and watch the target repeat it back into the page.
+2. Inspect the output area and identify that the target writes the search value
+   as HTML, not as text.
+3. Read the target source and find the pretend session token variable and the
+   exercise output element.
+4. Submit target-specific markup that runs script in the frame and copies that
+   token into the exercise output element.
+5. Confirm that the parent page is unaffected and no network request is made.
+6. The target derives the flag from the token copied into the output box.
+
+The target was vulnerable because untrusted text reached an HTML sink. Once the
+browser parsed the search term as markup, it could execute in the target page's
+context and read data available to that page. The impact is arbitrary same-page
+read and write, not a pop-up box.
+
+## The fix
+
+Render untrusted values as text, or use a framework escape mechanism that does
+that by default. If markup is truly required, sanitize with a strict allowlist
+before insertion.
+
+```js
+function renderSearchEcho(query) {
+  const message = document.querySelector("#search-message");
+  message.textContent = `Search results for: ${query}`;
+}
+
+function renderAllowedMarkup(html) {
+  const clean = sanitizeHtml(html, {
+    allowedTags: ["strong", "em", "code"],
+    allowedAttributes: {},
+  });
+
+  document.querySelector("#preview").innerHTML = clean;
+}
+```
+
+The production control is contextual output encoding. Avoid `innerHTML` for
+untrusted text; use `textContent` or the framework's escaped interpolation.
+
+## Recovered
+
+Recovered search trace: "Echo previewed `smudge` six times from the public
+terminal, then searched for donation receipts and cage transfer notes. The
+session token never left the sandbox during this audit." Act II closes with a
+clearer shape: someone was inside, and they were looking for a way out.

@@ -1,0 +1,19 @@
+## Scenario
+
+Nought maintains the badge printer. Every volunteer badge arrives with a small
+token that describes the name, role, and badge color. The printer reads that
+token, decides which template to use, and refuses to print the admin drawer code
+unless the role is high enough.
+
+The shipped badge token belongs to a volunteer. Nought says the badge printer
+checks tokens before trusting them, but the verifier is short enough to read in
+one sitting, and the token format is visible in the page. The admin panel is
+already in the target. It only needs the printer to believe the submitted token
+describes an admin.
+
+You do not need a server, a password, or a real signing key. This is a review of
+what the badge printer accepts from the browser and whether its verifier makes a
+decision that should never belong to the token sender.
+
+Win condition: submit a badge token that the target accepts as admin and recover
+the flag derived from the token you produced.

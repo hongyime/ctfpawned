@@ -1,0 +1,19 @@
+## Scenario
+
+Bobby maintains the adoption search database and thinks the best interface is a
+box that finds anything. Staff use it to search cats by name before matching
+them with adopters. Bobby added a live display of the query because he finds it
+comforting when the computer shows exactly what it is doing.
+
+The target contains a small in-browser database seeded with public adoption
+records and private staff notes. A normal search returns cat names and breeds.
+The staff notes table is not linked from the page, and the search form is not
+supposed to show it.
+
+Your job is to review how the search text becomes a database request. The page
+does not contact a real database; everything runs inside the sandbox. The
+constructed query is displayed under the form so you can reason about what the
+browser asks the database to do.
+
+Win condition: make the target return the private staff note that contains the
+flag, without using any service outside the page.

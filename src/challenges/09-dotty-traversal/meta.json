@@ -1,0 +1,16 @@
+{
+  "slug": "09-dotty-traversal",
+  "order": 9,
+  "act": 3,
+  "cat": "Dotty",
+  "title": "Path traversal",
+  "tagline": "Bypass a one-pass cleanup and read the private incident note.",
+  "vulnClass": "Path traversal",
+  "cwe": "CWE-22",
+  "difficulty": 3,
+  "tags": ["path-traversal", "archive", "canonicalization"],
+  "flagHash": "300df9777e4f8ca7fef8553964b0b22aa0a31ddd59b7963e98abfadead67ed38",
+  "frameHeight": 620,
+  "mobileOk": true,
+  "status": "ready"
+}

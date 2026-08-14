@@ -1,0 +1,16 @@
+{
+  "slug": "03-biscuit-cookie",
+  "order": 3,
+  "act": 1,
+  "cat": "Biscuit",
+  "title": "Cookie forging",
+  "tagline": "Change the browser-held label that decides which treat menu appears.",
+  "vulnClass": "Cookie forging",
+  "cwe": "CWE-565",
+  "difficulty": 2,
+  "tags": ["cookies", "client-state", "authorization"],
+  "flagHash": "6e1325aa2ff4a5ffd6666c469cc433bc734b633e83f1f13d5597c9c2825f5914",
+  "frameHeight": 540,
+  "mobileOk": true,
+  "status": "ready"
+}

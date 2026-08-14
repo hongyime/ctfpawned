@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
+import {
+  getChallengeBySlug,
+  getVisibleChallenges,
+} from "../../../lib/challenges";
+
+const solutionModules = import.meta.glob<{ default: AstroComponentFactory }>(
+  "../../../challenges/*/solution.mdx",
+  { eager: true },
+);
+
+export function getStaticPaths() {
+  return getVisibleChallenges(!import.meta.env.PROD).map((challenge) => ({
+    params: { slug: challenge.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const challenge = slug
+  ? getChallengeBySlug(slug, !import.meta.env.PROD)
+  : undefined;
+
+if (!challenge) {
+  return Astro.redirect("/");
+}
+
+const Solution =
+  solutionModules[`../../../challenges/${challenge.slug}/solution.mdx`]
+    ?.default;
+---
+
+<BaseLayout
+  title={`${challenge.cat}: solution | ctfpawned`}
+  description={`${challenge.cat} solution notes for ${challenge.vulnClass}.`}
+>
+  <section class="page">
+    <div class="hero">
+      <h1>{challenge.cat}: solution</h1>
+      <p>{challenge.vulnClass}</p>
+    </div>
+    <article class="content-panel">
+      {Solution ? <Solution /> : <p>Challenge solution is missing.</p>}
+    </article>
+  </section>
+</BaseLayout>

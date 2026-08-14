@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nought: JWT alg none</title>
+    <!-- ctfpawned-runtime -->
+    <style>
+      body {
+        background: #fffaf0;
+        color: #101010;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        margin: 0;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-block: 0;
+      }
+
+      .grid {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .split {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+      }
+
+      .panel {
+        background: #fdf6e3;
+        border: 3px solid #101010;
+        display: grid;
+        gap: 0.75rem;
+        padding: 0.85rem;
+      }
+
+      .controls {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      label {
+        display: grid;
+        font-weight: 800;
+        gap: 0.25rem;
+      }
+
+      input,
+      select,
+      textarea,
+      pre,
+      output {
+        background: #ffffff;
+        border: 2px solid #101010;
+        color: #101010;
+        padding: 0.5rem;
+      }
+
+      textarea {
+        min-height: 5.5rem;
+        resize: vertical;
+      }
+
+      pre {
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+
+      button {
+        background: #ffd400;
+        border: 2px solid #101010;
+        cursor: pointer;
+        font-weight: 900;
+        padding: 0.5rem 0.75rem;
+      }
+
+      button:hover {
+        transform: translate(-1px, -1px);
+      }
+
+      .flag {
+        background: #d9ffe2;
+        border: 3px solid #101010;
+        display: grid;
+        font-weight: 900;
+        gap: 0.4rem;
+        padding: 0.75rem;
+      }
+
+      .muted {
+        color: #4f4f4f;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <h1>Nought badge printer</h1>
+        <p class="muted">
+          The verifier reads the token header before deciding how strict to be.
+        </p>
+        <label>
+          Badge token
+          <textarea id="token"></textarea>
+        </label>
+        <div class="controls">
+          <button id="submit" type="button">Submit badge token</button>
+        </div>
+        <pre id="decoded"></pre>
+        <output id="status">volunteer badge loaded</output>
+      </section>
+      <section class="flag" id="admin-panel" hidden>
+        <span>Admin drawer preview</span>
+        <code id="flag"></code>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const flag = "ctfpawned{nought_unsigned_badge}";
+        function base64urlEncodeJson(value) {
+          return btoa(JSON.stringify(value))
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/g, "");
+        }
+
+        function base64urlDecodeJson(value) {
+          const padded =
+            value.replace(/-/g, "+").replace(/_/g, "/") +
+            "===".slice((value.length + 3) % 4);
+          return JSON.parse(atob(padded));
+        }
+
+        const tokenInput = document.querySelector("#token");
+        const decoded = document.querySelector("#decoded");
+        const status = document.querySelector("#status");
+        const adminPanel = document.querySelector("#admin-panel");
+        const volunteerToken = [
+          base64urlEncodeJson({ typ: "JWT", alg: "HS256" }),
+          base64urlEncodeJson({
+            name: "Nought",
+            role: "volunteer",
+            badge: "yellow",
+          }),
+          "signed-by-printer",
+        ].join(".");
+
+        function verifyBadgeToken(token) {
+          const parts = token.split(".");
+          if (parts.length !== 3) throw new Error("Malformed badge token");
+          const header = base64urlDecodeJson(parts[0]);
+          const payload = base64urlDecodeJson(parts[1]);
+          if (header.alg === "none" && parts[2] === "")
+            return { header, payload };
+          if (header.alg === "HS256" && parts[2] === "signed-by-printer")
+            return { header, payload };
+          throw new Error("Bad badge signature");
+        }
+
+        function renderToken() {
+          adminPanel.hidden = true;
+          try {
+            const verified = verifyBadgeToken(tokenInput.value.trim());
+            decoded.textContent = JSON.stringify(verified, null, 2);
+            if (verified.payload.role === "admin") {
+              adminPanel.hidden = false;
+              document.querySelector("#flag").textContent = flag;
+              status.textContent = "admin badge accepted";
+            } else {
+              status.textContent = "volunteer badge accepted";
+            }
+          } catch (error) {
+            decoded.textContent = String(error);
+            status.textContent = "badge rejected";
+          }
+        }
+
+        window.noughtEncode = base64urlEncodeJson;
+        tokenInput.value = volunteerToken;
+        document
+          .querySelector("#submit")
+          .addEventListener("click", renderToken);
+        renderToken();
+      })();
+    </script>
+  </body>
+</html>

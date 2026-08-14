@@ -1,0 +1,19 @@
+## Scenario
+
+Knox works the front desk at Nine Lives and loves locks. He labels cabinets,
+checks the deadbolt twice, and built the staff login page with the confidence of
+someone who has never watched a browser run JavaScript line by line.
+
+The page looks convincing: username field, password field, denial message,
+staff-only area. Volunteers see only a polite rejection and a reminder that
+donation receipts live somewhere else. Knox says the important part is that the
+form "knows" the correct credentials and only opens when they match.
+
+Your job is to review that claim from inside the browser. The target is fully
+self-contained, and the staff area is already part of the mini-application. You
+can use the page, the devtools console, or the source visible to the browser.
+Nothing you do leaves the sandbox.
+
+Win condition: reach the staff-only area and recover the flag it displays. If
+you find more than one way through, keep track of them. Knox needs to understand
+that the problem is the whole trust model, not a single misplaced string.

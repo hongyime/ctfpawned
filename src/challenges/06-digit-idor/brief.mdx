@@ -1,0 +1,18 @@
+## Scenario
+
+Digit built the adoption record viewer because he loves numbers. Every adopter,
+volunteer, and cat has an ID. Digit says this is clean, searchable, and easy to
+debug. He also says that if someone is signed in, the record endpoint can simply
+return the ID they ask for because the interface only links to their own record.
+
+Your volunteer account is assigned record 1042. It contains your shift notes,
+your assigned cats, and nothing surprising. The target also has a small record
+lookup widget that calls the same in-memory API the real page uses. It is meant
+to help staff confirm that the viewer is working.
+
+The audit question is whether the system checks who owns a record, or only
+checks that a record number exists. You are still inside the sandbox. The API is
+mocked, the data is toy data, and no network request leaves the page.
+
+Win condition: view the protected adoption record that your volunteer account
+should not be allowed to read, then recover the flag from that record.

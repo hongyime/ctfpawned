@@ -1,0 +1,16 @@
+{
+  "slug": "10-wildcard-cors",
+  "order": 10,
+  "act": 3,
+  "cat": "Wildcard",
+  "title": "CORS misconfiguration",
+  "tagline": "Reflect an untrusted origin with credentials and read the simulated private response.",
+  "vulnClass": "CORS misconfiguration",
+  "cwe": "CWE-942",
+  "difficulty": 4,
+  "tags": ["cors", "credentials", "browser-policy"],
+  "flagHash": "487c1789acf0ea5c7e31135e8068001bfbb296811ce6d9ba16504fd637af3e01",
+  "frameHeight": 690,
+  "mobileOk": true,
+  "status": "ready"
+}

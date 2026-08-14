@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Echo: Reflected XSS</title>
+    <!-- ctfpawned-runtime -->
+    <style>
+      body {
+        background: #fffaf0;
+        color: #101010;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        margin: 0;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-block: 0;
+      }
+
+      .grid {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .split {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+      }
+
+      .panel {
+        background: #fdf6e3;
+        border: 3px solid #101010;
+        display: grid;
+        gap: 0.75rem;
+        padding: 0.85rem;
+      }
+
+      .controls {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      label {
+        display: grid;
+        font-weight: 800;
+        gap: 0.25rem;
+      }
+
+      input,
+      select,
+      textarea,
+      pre,
+      output {
+        background: #ffffff;
+        border: 2px solid #101010;
+        color: #101010;
+        padding: 0.5rem;
+      }
+
+      textarea {
+        min-height: 5.5rem;
+        resize: vertical;
+      }
+
+      pre {
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+
+      button {
+        background: #ffd400;
+        border: 2px solid #101010;
+        cursor: pointer;
+        font-weight: 900;
+        padding: 0.5rem 0.75rem;
+      }
+
+      button:hover {
+        transform: translate(-1px, -1px);
+      }
+
+      .flag {
+        background: #d9ffe2;
+        border: 3px solid #101010;
+        display: grid;
+        font-weight: 900;
+        gap: 0.4rem;
+        padding: 0.75rem;
+      }
+
+      .muted {
+        color: #4f4f4f;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <h1>Echo site search</h1>
+        <p class="muted">
+          Search text is reflected into the page. The exercise token stays
+          inside this frame.
+        </p>
+        <form id="search-form" class="grid">
+          <label
+            >Search <input id="query" value="calico" autocomplete="off"
+          /></label>
+          <button type="submit">Search</button>
+        </form>
+      </section>
+      <section class="panel">
+        <h2>Search message</h2>
+        <div id="message"></div>
+      </section>
+      <section class="panel">
+        <h2>Exercise output</h2>
+        <label>Copied token <input id="exfil" autocomplete="off" /></label>
+        <button id="derive" type="button">Derive flag</button>
+        <div class="flag" id="flag-panel" hidden><code id="flag"></code></div>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const flag = "ctfpawned{echo_token_stayed_inside}";
+        window.echoToken = "sess-smudge-cage13-local";
+
+        function renderSearch(event) {
+          event?.preventDefault();
+          const value = document.querySelector("#query").value;
+          document.querySelector("#message").innerHTML =
+            "Search results for: <strong>" + value + "</strong>";
+        }
+
+        function deriveFlag() {
+          const exfil = document.querySelector("#exfil").value.trim();
+          if (exfil === window.echoToken) {
+            document.querySelector("#flag").textContent = flag;
+            document.querySelector("#flag-panel").hidden = false;
+          }
+        }
+
+        document
+          .querySelector("#search-form")
+          .addEventListener("submit", renderSearch);
+        document.querySelector("#derive").addEventListener("click", deriveFlag);
+        renderSearch();
+      })();
+    </script>
+  </body>
+</html>

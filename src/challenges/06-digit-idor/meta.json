@@ -1,0 +1,16 @@
+{
+  "slug": "06-digit-idor",
+  "order": 6,
+  "act": 2,
+  "cat": "Digit",
+  "title": "Broken object-level authorization",
+  "tagline": "Change the record number and read the object the interface never linked.",
+  "vulnClass": "IDOR",
+  "cwe": "CWE-639",
+  "difficulty": 2,
+  "tags": ["idor", "object-authorization", "mock-api"],
+  "flagHash": "9365df1af774a34bb752e17c678297d42c3599f0e4d7f5e5efe1d5a302cb1019",
+  "frameHeight": 610,
+  "mobileOk": true,
+  "status": "ready"
+}

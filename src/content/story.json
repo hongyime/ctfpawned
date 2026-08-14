@@ -1,0 +1,19 @@
+{
+  "acts": [
+    {
+      "id": 1,
+      "title": "The Front Door",
+      "description": "A routine audit of the member-facing site."
+    },
+    {
+      "id": 2,
+      "title": "Inside the Walls",
+      "description": "The adoption database starts to show impossible edits."
+    },
+    {
+      "id": 3,
+      "title": "Someone Was Here First",
+      "description": "The audit turns into a reconstruction of Smudge's trail."
+    }
+  ]
+}

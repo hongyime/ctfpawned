@@ -1,0 +1,16 @@
+{
+  "slug": "08-echo-xss",
+  "order": 8,
+  "act": 2,
+  "cat": "Echo",
+  "title": "Reflected XSS",
+  "tagline": "Make reflected markup copy the in-page token without leaving the sandbox.",
+  "vulnClass": "Reflected XSS",
+  "cwe": "CWE-79",
+  "difficulty": 3,
+  "tags": ["xss", "dom", "output-encoding"],
+  "flagHash": "8a802ac20d65781d3c2650ccff59b56804a906106cadbea7c3bda0847edc59e2",
+  "frameHeight": 650,
+  "mobileOk": true,
+  "status": "ready"
+}
