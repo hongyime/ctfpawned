@@ -7,7 +7,8 @@ completion and Phase 7 design/accessibility backfill. Both are implemented on
 `main`.
 
 Current repo state:
-- `main` and `origin/main` are at `2db9e80 feat: backfill phase 7 shell experience`.
+- `main` and `origin/main` are at `45ad920 docs: record agent phase state`.
+- The latest app-code commit is `2db9e80 feat: backfill phase 7 shell experience`.
 - Phase 6 backfill includes versioned local progress storage, delayed hint and
   story modules, gated solution reveal, solved/give-up tracking, and
   export/import/clear controls.
