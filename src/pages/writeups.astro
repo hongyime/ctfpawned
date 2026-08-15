@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCatArt } from "../lib/cat-art";
+import { getVisibleChallenges } from "../lib/challenges";
+
+const challenges = getVisibleChallenges(!import.meta.env.PROD);
+---
+
+<BaseLayout
+  title="Write-ups | ctfpawned"
+  description="Spoiler index for all 12 ctfpawned challenge solution write-ups."
+>
+  <section class="page">
+    <div class="hero">
+      <h1>Write-ups</h1>
+      <p>
+        Spoilers for every challenge. Each write-up explains the solve path, the
+        production fix, and the recovered story fragment.
+      </p>
+    </div>
+
+    <section class="content-panel spoiler-panel" aria-labelledby="spoiler-note">
+      <h2 id="spoiler-note">Spoiler index</h2>
+      <p>
+        Opening a challenge write-up still asks for confirmation and marks that
+        challenge as given up in local progress.
+      </p>
+    </section>
+
+    <div class="writeup-grid" data-writeup-list>
+      {
+        challenges.map((challenge) => (
+          <a
+            class={`writeup-card challenge-card-act-${challenge.act}`}
+            href={`/c/${challenge.slug}/solution/`}
+            data-writeup-card
+            data-slug={challenge.slug}
+          >
+            <div
+              class="cat-portrait"
+              aria-hidden="true"
+              set:html={getCatArt(challenge.slug)}
+            />
+            <div class="challenge-meta">
+              <span class="tag">#{challenge.order}</span>
+              <span class="tag">Act {challenge.act}</span>
+              <span class="tag">Difficulty {challenge.difficulty}</span>
+            </div>
+            <h2>
+              {challenge.cat}: {challenge.title}
+            </h2>
+            <p>{challenge.vulnClass}</p>
+            <span class="writeup-action">Open solution write-up</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

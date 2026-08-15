@@ -12,3 +12,4 @@
 - 2026-08-15: Rechecked current state; only local untracked `drafts/` remains, with no known app phase work left.
 - 2026-08-15: Removed stopped Docker container `ctfpawned-phase5-ci` only; left images, volumes, and unrelated running containers untouched. Created maintenance issues #7, #8, and #9 for README runbook, production smoke workflow, and pnpm Dependabot coverage.
 - 2026-08-15: Hardened the issue-summary workflow so AI inference is best-effort and missing Copilot CLI tooling does not fail issue-opened automation.
+- 2026-08-15: Started solution write-ups and maintenance issue closure work: `/writeups/` is being added as the public index for all 12 gated solution write-ups, and issues #7, #8, and #9 are being implemented before closure.

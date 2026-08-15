@@ -7,6 +7,7 @@ const challenge = allChallengeMetas.find(
 )!;
 const axePaths = [
   "/",
+  "/writeups/",
   `/c/${challenge.slug}/`,
   `/c/${challenge.slug}/solution/`,
 ];

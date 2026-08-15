@@ -1,0 +1,55 @@
+name: Production Smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 4 * * 2" # Weekly Tuesday 12:23 SGT
+
+concurrency:
+  group: production-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: read-all
+
+jobs:
+  smoke:
+    name: Probe production routes
+    runs-on: ubuntu-latest
+    env:
+      SITE_URL: https://ctfpawned.vercel.app
+    steps:
+      - name: Check production routes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          probe() {
+            local path="$1"
+            local expected="$2"
+            local body
+            body="$(mktemp)"
+            local status
+
+            status="$(curl --silent --show-error --location \
+              --output "$body" \
+              --write-out "%{http_code}" \
+              "${SITE_URL}${path}")"
+
+            if [ "$status" != "200" ]; then
+              echo "::error::${SITE_URL}${path} returned ${status}"
+              cat "$body"
+              exit 1
+            fi
+
+            if ! grep -q "$expected" "$body"; then
+              echo "::error::${SITE_URL}${path} did not contain ${expected}"
+              cat "$body"
+              exit 1
+            fi
+
+            rm -f "$body"
+          }
+
+          probe "/" "ctfpawned"
+          probe "/c/01-scrambles-encoding/" "Scrambles"
+          probe "/shell.js" "ctfpawned:progress"

@@ -32,13 +32,24 @@ const Solution =
 ---
 
 <BaseLayout
-  title={`${challenge.cat}: solution | ctfpawned`}
-  description={`${challenge.cat} solution notes for ${challenge.vulnClass}.`}
+  title={`${challenge.cat}: solution write-up | ctfpawned`}
+  description={`${challenge.cat} solution write-up for ${challenge.vulnClass}.`}
 >
   <section class="page">
-    <div class="hero">
-      <h1>{challenge.cat}: solution</h1>
-      <p>{challenge.vulnClass}</p>
+    <div class={`hero challenge-hero challenge-card-act-${challenge.act}`}>
+      <div>
+        <h1>{challenge.cat}: solution write-up</h1>
+        <p>
+          Walkthrough, production fix, and recovered story notes for {
+            challenge.vulnClass
+          }.
+        </p>
+        <div class="challenge-meta">
+          <span class="tag">Act {challenge.act}</span>
+          <span class="tag">Difficulty {challenge.difficulty}</span>
+          <span class="tag">{challenge.vulnClass}</span>
+        </div>
+      </div>
     </div>
     <section
       class="solution-gate"
@@ -62,5 +73,11 @@ const Solution =
         {Solution ? <Solution /> : <p>Challenge solution is missing.</p>}
       </article>
     </section>
+    <nav class="solution-nav" aria-label="Solution navigation">
+      <a class="secondary-action" href={`/c/${challenge.slug}/`}>
+        Back to challenge
+      </a>
+      <a class="secondary-action" href="/writeups/">All write-ups</a>
+    </nav>
   </section>
 </BaseLayout>

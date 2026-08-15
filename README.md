@@ -84,6 +84,37 @@ pnpm test:e2e     # escape, solve, progress, launch QA, and a11y suites
 Node 24 is pinned in [`.nvmrc`](./.nvmrc) for Vercel compatibility. The package
 expects pnpm 11 or newer.
 
+## Maintenance runbook
+
+Before merging app or content changes, run the local gate:
+
+```bash
+pnpm content:check
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm build
+pnpm perf:budget
+pnpm test:e2e
+```
+
+The hosted Build Check should pass before merging code, content, dependency, or
+deployment changes. That workflow builds the site, typechecks, lints, runs unit
+tests, installs Playwright browsers, checks the performance budget, and runs the
+browser suite.
+
+After production deploys, smoke the live site with:
+
+```bash
+curl -I https://ctfpawned.vercel.app/
+curl -I https://ctfpawned.vercel.app/c/01-scrambles-encoding/
+curl -I https://ctfpawned.vercel.app/shell.js
+```
+
+The scheduled Production Smoke workflow performs the same lightweight live
+checks. The local `drafts/` directory is draft material; do not commit it unless
+that is explicitly requested.
+
 ## Adding a challenge
 
 One directory. The build globs it, and no shell code changes:

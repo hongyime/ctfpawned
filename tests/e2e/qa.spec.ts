@@ -7,6 +7,7 @@ const readyChallenges = allChallengeMetas.filter(
 const shellPaths = [
   "/",
   "/primer/",
+  "/writeups/",
   "/about/",
   ...readyChallenges.flatMap((challenge) => [
     `/c/${challenge.slug}/`,
@@ -111,5 +112,46 @@ test.describe("launch QA", () => {
     await expect(page.locator(".desktop-preferred")).toHaveCount(
       desktopPreferred.length,
     );
+  });
+
+  test("write-ups index links every ready challenge solution", async ({
+    page,
+  }) => {
+    await page.goto("/writeups/");
+
+    await expect(page.locator("[data-writeup-card]")).toHaveCount(
+      readyChallenges.length,
+    );
+
+    for (const challenge of readyChallenges) {
+      const card = page.locator(
+        `[data-writeup-card][data-slug="${challenge.slug}"]`,
+      );
+
+      await expect(card).toContainText(challenge.cat);
+      await expect(card).toHaveAttribute(
+        "href",
+        `/c/${challenge.slug}/solution/`,
+      );
+    }
+  });
+
+  test("each solution write-up exposes required sections after reveal", async ({
+    page,
+  }) => {
+    for (const challenge of readyChallenges) {
+      await page.goto(`/c/${challenge.slug}/solution/`);
+      await page.getByRole("button", { name: "Show me anyway" }).click();
+
+      await expect(page.locator("[data-solution-content]")).toContainText(
+        "Walkthrough",
+      );
+      await expect(page.locator("[data-solution-content]")).toContainText(
+        "The fix",
+      );
+      await expect(page.locator("[data-solution-content]")).toContainText(
+        "Recovered",
+      );
+    }
   });
 });

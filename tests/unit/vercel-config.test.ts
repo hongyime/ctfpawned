@@ -31,6 +31,8 @@ describe("vercel header config", () => {
       "/",
       "/primer",
       "/primer/(.*)",
+      "/writeups",
+      "/writeups/(.*)",
       "/about",
       "/about/(.*)",
       "/c/(.*)",

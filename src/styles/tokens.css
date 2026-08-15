@@ -532,6 +532,65 @@ input {
   margin-top: 1.25rem;
 }
 
+.solution-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.spoiler-panel {
+  margin-bottom: 1.25rem;
+}
+
+.writeup-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.writeup-card {
+  --card-accent: var(--accent);
+  background:
+    linear-gradient(var(--card-accent) 0 0.55rem, transparent 0.55rem),
+    var(--surface);
+  border: var(--border-w) solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  color: inherit;
+  display: grid;
+  gap: 0.75rem;
+  min-height: 16rem;
+  padding: 1.6rem 1rem 1rem;
+  text-decoration: none;
+}
+
+.writeup-card:focus-visible,
+.writeup-card:hover {
+  transform: translate(-2px, -2px);
+}
+
+.writeup-card h2,
+.writeup-card p {
+  margin: 0;
+}
+
+.writeup-card h2 {
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.writeup-action {
+  align-self: end;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  display: inline-flex;
+  font-size: 0.86rem;
+  font-weight: 900;
+  justify-self: start;
+  padding: 0.3rem 0.5rem;
+}
+
 .solution-content[hidden],
 [hidden] {
   display: none !important;
