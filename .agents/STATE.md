@@ -2,9 +2,9 @@
 
 Current task: CTF PAWNED solution write-ups and maintenance issue closure.
 
-Status: in progress. Phase work remains complete. Current work adds an in-site
-write-ups index for all 12 challenge solutions and implements maintenance
-issues #7, #8, and #9 so they can be closed with evidence.
+Status: complete. Phase work remains complete. The site now has an in-site
+write-ups index for all 12 challenge solutions, and maintenance issues #7, #8,
+and #9 are implemented and closed with evidence.
 
 Current repo state:
 - The latest app-code commit is `2db9e80 feat: backfill phase 7 shell experience`.
@@ -31,9 +31,17 @@ Current repo state:
   Chromium write-up QA, launch metadata, `/writeups/` CSP, and `/writeups/`
   accessibility checks. Parallel Playwright attempts raced on rebuilding
   `dist`; sequential reruns passed.
+- Implementation commit: `3ad1202 feat: add challenge writeups and maintenance
+  automation`.
+- Hosted verification passed on `3ad1202`: Build Check run `31894071324`,
+  Production Smoke run `31894071771`, CodeQL, Semgrep, TruffleHog, and LFS
+  Guard.
+- Production verification passed: `/writeups/` returns 200 with 12 write-up
+  cards, `/c/01-scrambles-encoding/solution/` returns 200 with write-up
+  sections, and the sitemap includes `/writeups/`.
+- Issues #7, #8, and #9 were closed as completed.
 - Local `drafts/` remains untracked draft material. Do not commit it unless the
   user explicitly asks.
 
 Next steps:
-- Commit and push, run hosted verification, then close issues #7, #8, and #9
-  with evidence.
+- No known remaining requested work.
