@@ -11,3 +11,4 @@
 - 2026-08-15: Confirmed no known remaining phase gaps, no open GitHub PRs or issues, and prepared `.agents/` state for sharing per `AGENTS.md`.
 - 2026-08-15: Rechecked current state; only local untracked `drafts/` remains, with no known app phase work left.
 - 2026-08-15: Removed stopped Docker container `ctfpawned-phase5-ci` only; left images, volumes, and unrelated running containers untouched. Created maintenance issues #7, #8, and #9 for README runbook, production smoke workflow, and pnpm Dependabot coverage.
+- 2026-08-15: Hardened the issue-summary workflow so AI inference is best-effort and missing Copilot CLI tooling does not fail issue-opened automation.

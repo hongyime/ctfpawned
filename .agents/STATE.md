@@ -21,6 +21,8 @@ Current repo state:
 - The old stopped Docker container `ctfpawned-phase5-ci` was removed. No Docker
   images, volumes, or unrelated running containers were removed.
 - Maintenance follow-ups are tracked in GitHub issues #7, #8, and #9.
+- The issue-summary workflow is best-effort: missing AI/Copilot tooling no
+  longer fails the workflow.
 - Local `drafts/` remains untracked draft material. Do not commit it unless the
   user explicitly asks.
 

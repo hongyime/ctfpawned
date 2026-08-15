@@ -37,6 +37,7 @@ jobs:
 
       - name: Run AI inference
         id: inference
+        continue-on-error: true
         uses: actions/ai-inference@v3
         with:
           prompt: |
@@ -45,6 +46,7 @@ jobs:
             Body: ${{ steps.sanitize.outputs.body }}
 
       - name: Comment with AI summary
+        if: steps.inference.outcome == 'success' && steps.inference.outputs.response != ''
         # SECURITY: LLM output passed via env var RESPONSE, never interpolated
         # directly into the shell command string, preventing command injection.
         run: gh issue comment "$ISSUE_NUMBER" --body "$RESPONSE"
