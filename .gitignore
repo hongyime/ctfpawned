@@ -1,5 +1,6 @@
 
 
+
 # AI / editor dot directories (managed via sourcerepo)
 .*
 !.github/
@@ -18,7 +19,6 @@
 !.python-version
 !.tool-versions
 !.prettierrc*
-!.prettierignore
 !.eslintrc*
 !.stylelintrc*
 !.babelrc*
@@ -35,11 +35,4 @@
 skills/
 skills-lock.json
 docs/
-node_modules/
-dist/
-.astro/
-coverage/
-playwright-report/
-test-results/
-public/targets/
 # End AI / editor dot directories (managed via sourcerepo)

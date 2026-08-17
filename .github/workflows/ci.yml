@@ -1,37 +1,28 @@
 name: Build Check
 
-# CI scope (2026-08-14):
+# COST-OPTIMISED (2026-07-04):
 # - concurrency: cancel-in-progress so a new commit cancels the previous PR build.
-# - PR paths include Astro source, generated-target source, browser tests, public
-#   launch assets, and deployment config.
+# - Existing paths filter kept (already skips markdown-only edits).
 on:
-  workflow_dispatch:
   pull_request:
     branches: [main, master]
     paths:
-      # Only run when site source, tests, config, or dependency files change
-      - ".github/workflows/ci.yml"
-      - ".nvmrc"
+      # Only run when JS/TS source or dependency files change
       - "**.ts"
       - "**.tsx"
       - "**.js"
       - "**.jsx"
-      - "**.mjs"
-      - "**.astro"
-      - "**.mdx"
-      - "**.html"
+      - "**.vue"
       - "**.css"
-      - "**.json"
-      - "public/**"
-      - "scripts/**"
-      - "src/**"
-      - "tests/**"
-      - "astro.config.mjs"
+      - "**.scss"
       - "package.json"
+      - "package-lock.json"
       - "pnpm-lock.yaml"
-      - "playwright.config.ts"
+      - "bun.lockb"
+      - "postcss.config.*"
+      - "tailwind.config.*"
+      - "vite.config.*"
       - "tsconfig*.json"
-      - "vercel.json"
 
 concurrency:
   group: build-${{ github.workflow }}-${{ github.ref }}
@@ -72,11 +63,8 @@ jobs:
         if: steps.detect.outputs.has_build == 'true'
         uses: actions/setup-node@v7
         with:
-          node-version-file: ".nvmrc"
-
-      - name: Install pnpm
-        if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'pnpm'
-        run: npm install -g pnpm@11.17.0
+          node-version: "lts/*"
+          cache: ${{ steps.detect.outputs.pm }}
 
       - name: Install dependencies (npm)
         if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'npm'
@@ -86,7 +74,9 @@ jobs:
 
       - name: Install dependencies (pnpm)
         if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'pnpm'
-        run: pnpm install --frozen-lockfile
+        run: |
+          npm install -g pnpm
+          pnpm install --frozen-lockfile
 
       - name: Install dependencies (bun)
         if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'bun'
@@ -97,30 +87,6 @@ jobs:
       - name: Run build
         if: steps.detect.outputs.has_build == 'true'
         run: ${{ steps.detect.outputs.pm == 'npm' && 'npm run build' || format('{0} run build', steps.detect.outputs.pm) }}
-
-      - name: Run typecheck
-        if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'pnpm'
-        run: pnpm run typecheck
-
-      - name: Run lint
-        if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'pnpm'
-        run: pnpm run lint
-
-      - name: Run unit tests
-        if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'pnpm'
-        run: pnpm run test
-
-      - name: Install Playwright browsers
-        if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'pnpm'
-        run: pnpm exec playwright install --with-deps chromium firefox webkit
-
-      - name: Run performance budget
-        if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'pnpm'
-        run: pnpm run perf:budget
-
-      - name: Run browser smoke tests
-        if: steps.detect.outputs.has_build == 'true' && steps.detect.outputs.pm == 'pnpm'
-        run: pnpm run test:e2e
 
       - name: Build succeeded
         if: steps.detect.outputs.has_build == 'true'

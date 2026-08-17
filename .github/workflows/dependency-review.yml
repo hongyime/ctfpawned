@@ -19,42 +19,11 @@ jobs:
           echo "Dependency Review requires dependency graph/GHAS support on private repositories."
           echo "Skipping instead of failing this Dependabot PR."
 
-      - name: Check dependency review support
-        id: support
-        if: ${{ !github.event.repository.private }}
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          status=$(curl --silent --show-error --output /tmp/dependency-review.json --write-out "%{http_code}" \
-            --header "Authorization: Bearer ${GH_TOKEN}" \
-            --header "Accept: application/vnd.github+json" \
-            --header "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${REPO}/dependency-graph/compare/${BASE_SHA}...${HEAD_SHA}")
-
-          if [ "$status" = "200" ]; then
-            echo "supported=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [ "$status" = "403" ] || [ "$status" = "404" ]; then
-            echo "supported=false" >> "$GITHUB_OUTPUT"
-            echo "Dependency Review API is unavailable for this repository; skipping."
-            cat /tmp/dependency-review.json
-            exit 0
-          fi
-
-          cat /tmp/dependency-review.json
-          exit 1
-
       - uses: actions/checkout@v7
-        if: ${{ !github.event.repository.private && steps.support.outputs.supported == 'true' }}
+        if: ${{ !github.event.repository.private }}
 
       - name: Dependency Review
-        if: ${{ !github.event.repository.private && steps.support.outputs.supported == 'true' }}
+        if: ${{ !github.event.repository.private }}
         uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: moderate
