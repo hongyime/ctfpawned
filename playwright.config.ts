@@ -1,6 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const isWindows = process.platform === "win32";
+const port = Number(process.env.PLAYWRIGHT_PORT || 4321);
+if (!Number.isInteger(port) || port < 1024 || port > 65535) {
+  throw new Error("PLAYWRIGHT_PORT must be an unprivileged TCP port");
+}
+const serve = `pnpm serve:dist -- --host 127.0.0.1 --port ${port}`;
 const includeFirefox =
   !isWindows || process.env.PLAYWRIGHT_FIREFOX_WINDOWS === "1";
 
@@ -11,13 +16,16 @@ export default defineConfig({
   // Keep Windows local runs serial; browser startup is the slowest path here.
   workers: isWindows ? 1 : 2,
   use: {
-    baseURL: "http://127.0.0.1:4321",
+    baseURL: `http://127.0.0.1:${port}`,
     trace: "on-first-retry",
   },
   webServer: {
-    command: "pnpm build && pnpm serve:dist -- --host 127.0.0.1",
-    url: "http://127.0.0.1:4321",
-    reuseExistingServer: !process.env.CI,
+    command:
+      process.env.PLAYWRIGHT_SKIP_BUILD === "1"
+        ? serve
+        : `pnpm build && ${serve}`,
+    url: `http://127.0.0.1:${port}`,
+    reuseExistingServer: false,
     timeout: 300_000,
   },
   projects: [

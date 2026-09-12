@@ -12,12 +12,12 @@ import {
 } from "../../src/lib/progress";
 
 describe("progress model", () => {
-  it("repairs corrupt storage blobs", () => {
+  it("keeps corrupt storage blobs available for recovery", () => {
     const storage = { [PROGRESS_STORAGE_KEY]: "{bad json" };
     const progress = repairStoredProgress(storage);
 
     expect(progress).toEqual(defaultProgress());
-    expect(JSON.parse(storage[PROGRESS_STORAGE_KEY] ?? "{}").v).toBe(1);
+    expect(storage[PROGRESS_STORAGE_KEY]).toBe("{bad json");
   });
 
   it("degrades unknown future versions safely", () => {

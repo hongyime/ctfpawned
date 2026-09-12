@@ -1,5 +1,9 @@
 const progressKey = "ctfpawned:progress";
 const progressVersion = 1;
+let currentProgress = defaultProgress();
+let storageIssue = null;
+let preservedRaw = null;
+let lastReadRaw;
 
 function defaultProgress() {
   return {
@@ -20,9 +24,34 @@ function safeCount(value) {
 }
 
 function migrateProgress(raw) {
-  if (!isObject(raw) || raw.v !== progressVersion) return defaultProgress();
+  if (!isObject(raw)) return defaultProgress();
+  if (raw.v === undefined && Array.isArray(raw.solved)) {
+    return {
+      v: progressVersion,
+      solved: Object.fromEntries(
+        raw.solved
+          .filter((slug) => typeof slug === "string")
+          .map((slug) => [
+            slug,
+            {
+              at: 0,
+              hintsUsed: safeCount(
+                isObject(raw.hintsUsed) ? raw.hintsUsed[slug] : 0,
+              ),
+              gaveUp: false,
+            },
+          ]),
+      ),
+      hintsUsed: Object.fromEntries(
+        Object.entries(isObject(raw.hintsUsed) ? raw.hintsUsed : {}).map(
+          ([slug, count]) => [slug, safeCount(count)],
+        ),
+      ),
+    };
+  }
+  if (raw.v !== progressVersion) return defaultProgress();
 
-  const solved = {};
+  const solved = Object.create(null);
   for (const [slug, entry] of Object.entries(raw.solved || {})) {
     if (!isObject(entry)) continue;
     solved[slug] = {
@@ -32,7 +61,7 @@ function migrateProgress(raw) {
     };
   }
 
-  const hintsUsed = {};
+  const hintsUsed = Object.create(null);
   for (const [slug, count] of Object.entries(raw.hintsUsed || {})) {
     hintsUsed[slug] = safeCount(count);
   }
@@ -56,25 +85,40 @@ function base64Decode(encoded) {
 function readProgress() {
   try {
     const encoded = localStorage.getItem(progressKey);
-    const progress = encoded
-      ? migrateProgress(JSON.parse(encoded))
-      : defaultProgress();
-    localStorage.setItem(progressKey, JSON.stringify(progress));
-    return progress;
-  } catch {
-    const progress = defaultProgress();
+    if (storageIssue && encoded === lastReadRaw) return currentProgress;
+    lastReadRaw = encoded;
     try {
-      localStorage.setItem(progressKey, JSON.stringify(progress));
+      currentProgress =
+        encoded === null
+          ? defaultProgress()
+          : importedProgress(JSON.parse(encoded));
+      storageIssue = null;
+      preservedRaw = null;
     } catch {
-      return progress;
+      preservedRaw = encoded;
+      storageIssue = "unsupported";
     }
-    return progress;
+  } catch {
+    storageIssue = "unavailable";
   }
+  return currentProgress;
 }
 
-function writeProgress(progress) {
+function writeProgress(progress, replaceStored = false) {
   const next = migrateProgress(progress);
-  localStorage.setItem(progressKey, JSON.stringify(next));
+  if (!storageIssue || replaceStored) {
+    try {
+      const encoded = JSON.stringify(next);
+      localStorage.setItem(progressKey, encoded);
+      lastReadRaw = encoded;
+      storageIssue = null;
+      preservedRaw = null;
+    } catch (error) {
+      if (replaceStored) throw error;
+      storageIssue = "unavailable";
+    }
+  }
+  currentProgress = next;
   renderProgress(next);
   return next;
 }
@@ -122,7 +166,24 @@ function encodeExport(progress) {
 }
 
 function decodeImport(encoded) {
-  return migrateProgress(JSON.parse(base64Decode(encoded.trim())));
+  return importedProgress(JSON.parse(base64Decode(encoded.trim())));
+}
+
+function importedProgress(raw) {
+  const legacy =
+    isObject(raw) &&
+    raw.v === undefined &&
+    Array.isArray(raw.solved) &&
+    raw.solved.every((slug) => typeof slug === "string") &&
+    (raw.hintsUsed === undefined || isObject(raw.hintsUsed));
+  const current =
+    isObject(raw) &&
+    raw.v === progressVersion &&
+    isObject(raw.solved) &&
+    Object.values(raw.solved).every(isObject) &&
+    isObject(raw.hintsUsed);
+  if (!legacy && !current) throw new Error("Unsupported progress payload");
+  return migrateProgress(raw);
 }
 
 function toHex(bytes) {
@@ -140,6 +201,39 @@ async function hashFlag(slug, input) {
 }
 
 function renderProgress(progress = readProgress()) {
+  let warning = document.querySelector("[data-progress-storage-warning]");
+  if (!warning) {
+    warning = document.createElement("aside");
+    warning.dataset.progressStorageWarning = "";
+    warning.className = "content-panel";
+    warning.setAttribute("role", "status");
+    const message = document.createElement("p");
+    message.dataset.progressStorageMessage = "";
+    message.className = "quiet-status";
+    const actions = document.createElement("div");
+    actions.className = "progress-actions";
+    for (const [attribute, label] of [
+      ["progressExportDownload", "Download current progress"],
+      ["progressRecover", "Download original save"],
+    ]) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "secondary-action";
+      button.dataset[attribute] = "";
+      button.textContent = label;
+      actions.append(button);
+    }
+    warning.append(message, actions);
+    document.querySelector("main")?.prepend(warning);
+  }
+  warning.hidden = !storageIssue;
+  warning.querySelector("[data-progress-storage-message]").textContent =
+    storageIssue === "unsupported"
+      ? "Your stored progress could not be read and has been preserved. New progress is temporary. Download it before leaving this page, and keep the original save before importing or clearing."
+      : "Progress cannot be saved in this browser. Download your current progress before leaving this page.";
+  for (const button of document.querySelectorAll("[data-progress-recover]")) {
+    button.hidden = preservedRaw === null;
+  }
   const solvedSlugs = new Set(Object.keys(progress.solved));
   const cards = [...document.querySelectorAll("[data-challenge-card]")];
   const total =
@@ -310,6 +404,26 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("click", (event) => {
+  const downloadButton = event.target.closest(
+    "[data-progress-export-download]",
+  );
+  const recoveryButton = event.target.closest("[data-progress-recover]");
+  if (downloadButton || (recoveryButton && preservedRaw !== null)) {
+    const content = downloadButton
+      ? encodeExport(readProgress())
+      : preservedRaw;
+    const url = URL.createObjectURL(
+      new Blob([content], { type: "text/plain;charset=utf-8" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = downloadButton
+      ? "ctfpawned-current-progress.txt"
+      : "ctfpawned-original-progress.txt";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+    return;
+  }
   const exportButton = event.target.closest("[data-progress-export]");
   if (exportButton) {
     const input = document.querySelector("[data-progress-import-input]");
@@ -328,9 +442,10 @@ document.addEventListener("click", (event) => {
       if (status) status.textContent = "Paste an export payload first.";
       return;
     }
-    if (!confirm("Replace local progress with this import?")) return;
     try {
-      writeProgress(decodeImport(input.value));
+      const imported = decodeImport(input.value);
+      if (!confirm("Replace local progress with this import?")) return;
+      writeProgress(imported, true);
       if (status) status.textContent = "Progress imported.";
     } catch {
       if (status) status.textContent = "Import payload is malformed.";
@@ -342,8 +457,14 @@ document.addEventListener("click", (event) => {
   if (clearButton) {
     const status = document.querySelector("[data-progress-tools-status]");
     if (!confirm("Clear local ctfpawned progress?")) return;
-    writeProgress(defaultProgress());
-    if (status) status.textContent = "Progress cleared.";
+    try {
+      writeProgress(defaultProgress(), true);
+      if (status) status.textContent = "Progress cleared.";
+    } catch {
+      if (status)
+        status.textContent =
+          "Progress could not be cleared. Stored data was not changed.";
+    }
   }
 });
 
@@ -368,11 +489,15 @@ document.addEventListener("submit", async (event) => {
 
   if (valid) {
     markSolved(form.dataset.slug || "");
+    if (storageIssue)
+      output.textContent =
+        "Correct flag. Progress is temporary; download it before leaving this page.";
   }
 });
 
 window.addEventListener("storage", (event) => {
-  if (event.key === progressKey) renderProgress(readProgress());
+  if (event.key === progressKey || event.key === null)
+    renderProgress(readProgress());
 });
 
 renderProgress();

@@ -137,9 +137,19 @@ export function encodeProgress(value: Progress): string {
 }
 
 export function repairStoredProgress(storage: StorageLike): Progress {
-  const repaired = decodeProgress(storage[PROGRESS_STORAGE_KEY]);
-  storage[PROGRESS_STORAGE_KEY] = encodeProgress(repaired);
-  return repaired;
+  const encoded = storage[PROGRESS_STORAGE_KEY];
+  if (encoded === undefined) return defaultProgress();
+  try {
+    const repaired = importedProgress(JSON.parse(encoded));
+    try {
+      storage[PROGRESS_STORAGE_KEY] = encodeProgress(repaired);
+    } catch {
+      return repaired;
+    }
+    return repaired;
+  } catch {
+    return defaultProgress();
+  }
 }
 
 export function markHintUsed(
@@ -210,8 +220,26 @@ export function exportProgress(value: Progress): string {
 export function importProgress(encoded: string): Progress {
   const trimmed = encoded.trim();
   const json = base64Decode(trimmed);
+  return importedProgress(JSON.parse(json));
+}
 
-  return migrate(JSON.parse(json));
+function importedProgress(raw: unknown): Progress {
+  const legacy =
+    isRecord(raw) &&
+    raw.v === undefined &&
+    Array.isArray(raw.solved) &&
+    raw.solved.every((slug) => typeof slug === "string") &&
+    (raw.hintsUsed === undefined || isRecord(raw.hintsUsed));
+  const current =
+    isRecord(raw) &&
+    raw.v === PROGRESS_VERSION &&
+    isRecord(raw.solved) &&
+    Object.values(raw.solved).every(isRecord) &&
+    isRecord(raw.hintsUsed);
+  if (!legacy && !current) {
+    throw new Error("Unsupported progress payload");
+  }
+  return migrate(raw);
 }
 
 export const progress = persistentAtom<Progress>(
