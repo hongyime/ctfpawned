@@ -1,5 +1,14 @@
 # Agent State
 
+## 2026-09-16 baseline (batch C)
+
+- Local `main` is 2 commits behind `origin/main` (`e7ea692 chore(config): sync from sourcerepo`, `9bc5bff chore: sync heartbeat`) — both `[skip ci]` sync chores. Not fast-forwarded this session (documentation-only pass).
+- 0 open issues. 3 open Dependabot PRs left untouched: **#20** `actions/upload-artifact 6→7`, **#18** `actions/labeler 6→7`, **#15** `actions/setup-python 6→7`.
+- Local `drafts/` (12 challenge dirs + `story.md`) remains untracked — preserved per STATE convention.
+- No code changes this session; no push, no PR.
+
+---
+
 Current task: CTF PAWNED solution write-ups and maintenance issue closure.
 
 Status: complete. Phase work remains complete. The site now has an in-site
